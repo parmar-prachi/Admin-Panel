@@ -1,0 +1,219 @@
+<%- include('../header') %>
+
+    <div class="d-flex w-100" style="min-height: 100vh; background-color: #1e1e2f;">
+
+        <div class="d-flex w-100" style="min-height: 100vh;">
+
+            <%- include('../sidebar') %>
+
+                <div class="main-content-wrapper flex-grow-1" id="mainContent">
+
+                    <%- include('../navbar') %>
+
+                        <div class="container-fluid py-4">
+
+                            <div class="card-header border-0 pt-4 px-4">
+                                <h4 class="font-weight-bold text-white mb-2">
+                                    <span style="color: #6c5dd3; margin-right: 8px;">🌿</span>
+                                    Add Extra Sub Category
+                                </h4>
+
+                                <p class="text-white small mb-0">
+                                    Create a secondary classification layer mapping under a primary parent category.
+                                </p>
+                            </div>
+
+                            <div class="card-body p-4" style="max-width: 700px;">
+
+                                <form action="/extrasubcategory/add" method="POST" enctype="multipart/form-data">
+
+                                    <!-- Category -->
+
+                                    <div class="mb-3">
+
+                                        <label class="font-weight-500 text-secondary small">
+                                            Parent Category
+                                        </label>
+
+                                        <select name="category" class="form-control custom-input" required>
+
+                                            <option value="">
+                                                Select Category
+                                            </option>
+
+                                            <% categories.forEach(cat=> { %>
+
+                                                <option value="<%= cat._id %>">
+
+                                                    <%= cat.name %>
+
+                                                </option>
+
+                                                <% }) %>
+
+                                        </select>
+
+                                    </div>
+
+                                    <!-- Sub Category -->
+
+                                    <div class="mb-3">
+
+                                        <label class="font-weight-500 text-secondary small">
+                                            Sub Category
+                                        </label>
+
+                                        <select name="subCategory" class="form-control custom-input" required>
+
+                                            <option value="">
+                                                Select Sub Category
+                                            </option>
+
+                                            <% subCategories.forEach(sub=> { %>
+
+                                                <option value="<%= sub._id %>">
+
+                                                    <%= sub.name %>
+
+                                                </option>
+
+                                                <% }) %>
+
+                                        </select>
+
+                                    </div>
+
+                                    <!-- Extra Sub Category Name -->
+
+                                    <div class="mb-3">
+
+                                        <label class="font-weight-500 text-secondary small">
+                                            Extra Sub Category Name
+                                        </label>
+
+                                        <input type="text" name="name" class="form-control custom-input"
+                                            placeholder="e.g., Running Shoes, Wireless Headphones" required>
+
+                                    </div>
+
+                                    <!-- Description -->
+
+                                    <div class="mb-3">
+
+                                        <label class="font-weight-500 text-secondary small">
+                                            Description (Optional)
+                                        </label>
+
+                                        <textarea name="description" rows="4" class="form-control custom-input"
+                                            placeholder="Provide additional details regarding this sub-classification context..."></textarea>
+
+                                    </div>
+
+                                    <!-- Status -->
+
+                                    <div class="mb-3">
+
+                                        <label class="font-weight-500 text-secondary small">
+                                            Status
+                                        </label>
+
+                                        <select name="status" class="form-control custom-input">
+
+                                            <option value="Active">
+                                                Active
+                                            </option>
+
+                                            <option value="Inactive">
+                                                Inactive
+                                            </option>
+
+                                        </select>
+
+                                    </div>
+
+                                    <!-- Image -->
+
+                                    <div class="mb-4">
+
+                                        <label class="font-weight-500 text-secondary small">
+                                            Extra Sub Category Image
+                                        </label>
+
+                                        <div class="p-3 style-file-zone"
+                                            style="border:2px dashed #5c5780;background:#252538;border-radius:10px;">
+
+                                            <input type="file" name="image"
+                                                class="form-control-file text-secondary small">
+
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Buttons -->
+
+                                    <div class="d-flex align-items-center justify-content-start mt-4" style="gap:12px;">
+
+                                        <button type="submit" class="btn text-white px-5 shadow-sm"
+                                            style="background-color:#6c5dd3;border-radius:10px;font-weight:500;">
+
+                                            📥 Save Extra Sub Category
+
+                                        </button>
+
+                                        <a href="/extrasubcategory" class="btn btn-light px-4"
+                                            style="border-radius:10px;font-weight:500;">
+
+                                            Cancel
+
+                                        </a>
+
+                                    </div>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                </div>
+
+        </div>
+
+    </div>
+
+    <style>
+        .main-content-wrapper {
+            margin-left: 260px;
+            min-height: 100vh;
+            padding: 30px;
+            transition: all .3s ease-in-out;
+        }
+
+        .custom-input {
+            background: #1e1e2f !important;
+            border: 1px solid #5c5780 !important;
+            border-radius: 10px !important;
+            padding: 10px 14px !important;
+            height: auto !important;
+            color: white !important;
+        }
+
+        .custom-input:focus {
+            background: #1e1e2f !important;
+            border-color: #6c5dd3 !important;
+            box-shadow: 0 0 0 3px rgba(108, 93, 211, .15) !important;
+        }
+
+        .font-weight-500 {
+            font-weight: 500;
+        }
+
+        select.custom-input option {
+            background: #1e1e2f;
+            color: white;
+        }
+
+        ::placeholder {
+            color: rgba(209, 209, 209, .35) !important;
+        }
+    </style>

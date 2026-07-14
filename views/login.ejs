@@ -102,6 +102,7 @@
 
     <div class="login-box">
 
+    <%- include("flash") %>
         <h2>Admin Login</h2>
 
         <form action="/login" method="POST">
@@ -121,7 +122,13 @@
         <div class="footer-text">
             Don't have an account?
             <a href="/signup">Register</a>
+
+            <div>
+                <a href="/forgot-password">Forgot Password?</a>
+            </div>
         </div>
+
+
 
     </div>
 

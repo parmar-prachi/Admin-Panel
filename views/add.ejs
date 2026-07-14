@@ -11,6 +11,8 @@
 
                     <div class="container-fluid py-4">
 
+                        <%- include("flash") %>
+                        
                             <div class="card-header  border-0 pt-4 px-4">
                                 <h4 class="font-weight-bold text-white mb-2">
                                     <span style="color: #6c5dd3; margin-right: 8px;">➕</span> Add New User
@@ -229,6 +231,10 @@
 
         .font-weight-500 {
             font-weight: 500;
+        }
+        ::placeholder{
+            /* background-color:transparent; */
+            color: rgba(209, 209, 209, 0.143) !important;
         }
     </style>
 

@@ -1,33 +1,19 @@
 const express = require("express");
 const router = express.Router();
-
-const multer = require("multer");
-const path = require("path");
+const upload = require("../config/multer");
+const sessionAuth = require("../middleware/sessionAuth");
+const roleAuth = require("../middleware/roleAuth");
 
 const userController = require("../controllers/userController");
 
-// Multer
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, path.join(__dirname, "../uploads/users"));
-    },
-
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
-});
-
-const upload = multer({
-
-    storage
-
-});
-
 // Routes
 
-
-router.get("/", userController.viewUsers);
+router.get(
+    "/",
+    sessionAuth,
+    roleAuth("Super Admin"),
+    userController.viewUsers
+);
 
 router.get("/add", userController.addUser);
 
@@ -53,5 +39,6 @@ router.post(
 router.get("/:id", userController.getSingleUser)
 
 router.get("/delete/:id", userController.deleteUser);
+
 
 module.exports = router;

@@ -1,0 +1,356 @@
+<%- include('../header') %>
+
+    <div class="d-flex w-100" style="min-height:100vh;background:#1e1e2f;">
+
+        <%- include('../sidebar') %>
+
+            <div class="main-content-wrapper flex-grow-1">
+
+                <%- include('../navbar') %>
+
+                    <div class="container-fluid py-4">
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+
+                            <div>
+
+                                <h4 class="text-white fw-bold">
+                                    📦 Orders
+                                </h4>
+
+                                <p class="text-secondary">
+                                    Manage customer orders.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <form action="/order" method="GET" class="row mb-4">
+
+                            <div class="col-md-4">
+
+                                <input type="text" name="search" value="<%= search %>" class="form-control custom-input bg-dark"
+                                    placeholder="Search Order Number">
+
+                            </div>
+
+                            <div class="col-md-3">
+
+                                <select name="status" class="form-control custom-input">
+
+                                    <option value="">All Status</option>
+
+                                    <option value="Pending" <%=status==="Pending" ? "selected" : "" %>>
+                                        Pending
+                                    </option>
+
+                                    <option value="Processing" <%=status==="Processing" ? "selected" : "" %>>
+                                        Processing
+                                    </option>
+
+                                    <option value="Packed" <%=status==="Packed" ? "selected" : "" %>>
+                                        Packed
+                                    </option>
+
+                                    <option value="Shipped" <%=status==="Shipped" ? "selected" : "" %>>
+                                        Shipped
+                                    </option>
+
+                                    <option value="Delivered" <%=status==="Delivered" ? "selected" : "" %>>
+                                        Delivered
+                                    </option>
+
+                                    <option value="Cancelled" <%=status==="Cancelled" ? "selected" : "" %>>
+                                        Cancelled
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                            <div class="col-md-2">
+
+                                <button class="btn text-white w-100" style="background:#6c5dd3;">
+
+                                    Search
+
+                                </button>
+
+                            </div>
+
+                        </form>
+
+                        <div class="table-responsive style-table-container">
+
+                            <table class="table text-white mb-0">
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>#</th>
+
+                                        <th>Order No</th>
+
+                                        <th>Customer</th>
+
+                                        <th>Product</th>
+
+                                        <th>Total</th>
+
+                                        <th>Payment</th>
+
+                                        <th>Status</th>
+
+                                        <th>Date</th>
+
+                                        <th>Action</th>
+
+                                    </tr>
+
+                                </thead>
+                                <tbody>
+                                    <% if (orders.length> 0) { %>
+
+                                        <% orders.forEach((order, index)=> { %>
+
+                                            <tr class="align-middle border-bottom-row">
+
+                                                <td>
+                                                    <%= ((page - 1) * 10) + index + 1 %>
+                                                </td>
+
+                                                <td class="fw-bold text-white">
+                                                    <%= order.orderNumber %>
+                                                </td>
+
+                                                <td>
+
+                                                    <div class="fw-bold text-white">
+                                                        <%= order.customerName %>
+                                                    </div>
+
+                                                    <small class="text-secondary">
+                                                        <%= order.customerEmail %>
+                                                    </small>
+
+                                                </td>
+
+                                                <td>
+                                                    <%= order.product ? order.product.name : "-" %>
+                                                </td>
+
+                                                <td class="fw-bold text-success">
+                                                    ₹<%= order.grandTotal %>
+                                                </td>
+
+                                                <td>
+
+                                                    <% if(order.paymentStatus=="Paid" ){ %>
+
+                                                        <span class="badge bg-success">
+                                                            Paid
+                                                        </span>
+
+                                                        <% }else if(order.paymentStatus=="Pending" ){ %>
+
+                                                            <span class="badge bg-warning text-dark">
+                                                                Pending
+                                                            </span>
+
+                                                            <% }else{ %>
+
+                                                                <span class="badge bg-danger">
+                                                                    Failed
+                                                                </span>
+
+                                                                <% } %>
+
+                                                </td>
+
+                                                <td>
+
+                                                    <% if(order.orderStatus=="Pending" ){ %>
+
+                                                        <span class="badge bg-warning text-dark">
+                                                            Pending
+                                                        </span>
+
+                                                        <% }else if(order.orderStatus=="Processing" ){ %>
+
+                                                            <span class="badge bg-info">
+                                                                Processing
+                                                            </span>
+
+                                                            <% }else if(order.orderStatus=="Packed" ){ %>
+
+                                                                <span class="badge bg-primary">
+                                                                    Packed
+                                                                </span>
+
+                                                                <% }else if(order.orderStatus=="Shipped" ){ %>
+
+                                                                    <span class="badge bg-secondary">
+                                                                        Shipped
+                                                                    </span>
+
+                                                                    <% }else if(order.orderStatus=="Delivered" ){ %>
+
+                                                                        <span class="badge bg-success">
+                                                                            Delivered
+                                                                        </span>
+
+                                                                        <% }else{ %>
+
+                                                                            <span class="badge bg-danger">
+                                                                                Cancelled
+                                                                            </span>
+
+                                                                            <% } %>
+
+                                                </td>
+
+                                                <td>
+                                                    <%= new Date(order.createdAt).toLocaleDateString() %>
+                                                </td>
+
+                                                <td>
+
+                                                    <a href="/order/view/<%= order._id %>"
+                                                        class="btn btn-sm btn-primary">
+
+                                                        👁
+
+                                                    </a>
+
+                                                    <a href="/order/edit/<%= order._id %>"
+                                                        class="btn btn-sm btn-warning">
+
+                                                        ✏️
+
+                                                    </a>
+
+                                                </td>
+
+                                            </tr>
+
+                                            <% }) %>
+
+                                                <% } else { %>
+
+                                                    <tr>
+
+                                                        <td colspan="9" class="text-center py-5 text-secondary">
+
+                                                            No Orders Found.
+
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <% } %>
+
+                                </tbody>
+
+                            </table>
+                            <% if(totalPages>1){ %>
+
+                                <nav class="mt-4">
+
+                                    <ul class="pagination justify-content-center">
+
+                                        <% for(let i=1;i<=totalPages;i++){ %>
+
+                                            <li class="page-item <%= page==i ? 'active' : '' %>">
+
+                                                <a class="page-link"
+                                                    href="/order?page=<%= i %>&search=<%= search %>&status=<%= status %>">
+
+                                                    <%= i %>
+
+                                                </a>
+
+                                            </li>
+
+                                            <% } %>
+
+                                    </ul>
+
+                                </nav>
+
+                                <% } %>
+                        </div>
+                        <style>
+                            .main-content-wrapper {
+                                margin-left: 260px;
+                                min-height: 100vh;
+                                padding: 30px;
+                                transition: all 0.3s ease-in-out;
+                            }
+
+                            .style-table-container {
+                                background-color: #1a1a26;
+                                border: 1px solid #2d3238;
+                                border-radius: 12px;
+                                overflow: hidden;
+                            }
+
+                            .table thead {
+                                background-color: #222235;
+                            }
+
+                            .table th,
+                            .table td {
+                                padding: 16px 20px;
+                                vertical-align: middle;
+                            }
+
+                            .border-bottom-row {
+                                border-bottom: 1px solid #252538;
+                            }
+
+
+                            .category-thumbnail {
+                                width: 50px;
+                                height: 50px;
+                                object-fit: cover;
+                                border-radius: 8px;
+                                border: 1px solid #5c5780;
+                            }
+
+                            .category-thumbnail-placeholder {
+                                width: 50px;
+                                height: 50px;
+                                background-color: #252538;
+                                border: 1px dashed #5c5780;
+                                border-radius: 8px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                font-size: 1.1rem;
+                            }
+
+                            .badge-active {
+                                background-color: rgba(40, 167, 69, 0.15);
+                                color: #28a745;
+                            }
+
+                            .badge-inactive {
+                                background-color: rgba(220, 53, 69, 0.15);
+                                color: #dc3545;
+                            }
+
+                            .action-btn-hover:hover {
+                                background-color: #6c5dd3 !important;
+                                transition: background 0.2s ease;
+                            }
+
+                            .font-weight-500 {
+                                font-weight: 500;
+                            }
+
+                            ::placeholder {
+                                color: rgba(209, 209, 209, 0.15) !important;
+                            }
+                        </style>

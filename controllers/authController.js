@@ -1,96 +1,64 @@
+const passport = require("passport");
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 
-// REGISTER PAGE
+// Register Page
 exports.registerPage = (req, res) => {
     res.render("signup");
 };
 
-// REGISTER :
-
-exports.register = async (req, res) => {
-    try {
-    
-        const emailInput = req.body.email ? req.body.email.trim().toLowerCase() : "";
-        const usernameInput = req.body.username ? req.body.username.trim() : "";
-
-        const existingEmail = await User.findOne({ email: emailInput });
-        if (existingEmail) {
-            return res.send("Email already exists ❌");
-        }
-
-        const existingUsername = await User.findOne({ username: usernameInput });
-        if (existingUsername) {
-            return res.send("Username already taken ❌");
-        }
-
-        // Hash the plain password
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
-
-        await User.create({
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            username: usernameInput,
-            email: emailInput,
-            password: hashedPassword
-        });
-
-        return res.redirect("/login");
-
-    } catch (err) {
-        console.log(err);
-        return res.status(500).send(err.message);
-    }
-};
-
-// LOGIN PAGE
-
+// Login Page
 exports.loginPage = (req, res) => {
     res.render("login");
 };
 
-// LOGIN USER
-exports.login = async (req, res) => {
-    try {
-        // Sanitize the input to match how it's stored
-        const emailInput = req.body.email ? req.body.email.trim().toLowerCase() : "";
-        const passwordInput = req.body.password;
+// Login
+exports.login = (req, res, next) => {
 
-        console.log("Looking for sanitized email:", emailInput);
+    passport.authenticate("local", (err, user, info) => {
 
-        const user = await User.findOne({ email: emailInput });
+        if (err) {
+            return next(err);
+        }
 
         if (!user) {
-            return res.send("User not found ❌");
+            req.flash("error", info.message);
+            return res.redirect("/login");
         }
 
-        console.log("Email:", emailInput);
-        console.log("Entered Password:", passwordInput);
-        console.log("Stored Hash:", user.password);
+        req.logIn(user, (err) => {
 
-        const match = await bcrypt.compare(passwordInput, user.password);
+            if (err) {
+                return next(err);
+            }
 
-        console.log("Password Match:", match);
+            console.log("Logged In User:", req.user);
 
-        if (!match) {
-            return res.send("Wrong password ❌");
-        }
+            return res.redirect("/dashboard");
 
-        res.cookie("user", user._id, {
-            httpOnly: true,
-            maxAge: 24 * 60 * 60 * 1000
         });
 
-        return res.redirect("/dashboard");
+    })(req, res, next);
 
-    } catch (err) {
-        console.log(err);
-        return res.status(500).send(err.message);
-    }
 };
 
-// LOGOUT
-exports.logout = (req, res) => { 
-    res.clearCookie("user");
-    return res.redirect("/login");
+// Logout
+exports.logout = (req, res, next) => {
+
+    req.logout(function (err) {
+
+        if (err) {
+            return next(err);
+        }
+
+        req.session.destroy(() => {
+
+            res.clearCookie("connect.sid");
+
+            res.redirect("/login");
+
+        });
+
+    });
+
 };

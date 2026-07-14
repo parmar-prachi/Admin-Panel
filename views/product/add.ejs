@@ -1,0 +1,354 @@
+<%- include('../header') %>
+
+    <div class="d-flex w-100" style="min-height:100vh;background:#1e1e2f;">
+
+        <%- include('../sidebar') %>
+
+            <div class="main-content-wrapper flex-grow-1">
+
+                <%- include('../navbar') %>
+
+                    <div class="container-fluid py-4">
+
+                        <div class="card-header border-0 pt-4 px-4">
+
+                            <h4 class="text-white fw-bold">
+
+                                📦 Add Product
+
+                            </h4>
+
+                            <p class="text-secondary">
+
+                                Create a new product.
+
+                            </p>
+
+                        </div>
+
+                        <div class="card-body p-4" style="max-width:750px;">
+
+                           <form action="/product/add" method="POST" enctype="multipart/form-data">
+
+                                <!-- Category -->
+
+                                <div class="mb-3">
+
+                                    <label class="text-secondary">
+
+                                        Category
+
+                                    </label>
+
+                                    <select name="category" id="category" class="form-control custom-input" required>
+
+                                        <option value="">Select Category</option>
+
+                                        <% categories.forEach(cat=>{ %>
+
+                                            <option value="<%= cat._id %>">
+
+                                                <%= cat.name %>
+
+                                            </option>
+
+                                            <% }) %>
+
+                                    </select>
+
+                                </div>
+
+                                <!-- Sub Category -->
+
+                                <div class="mb-3">
+
+                                    <label class="text-secondary">
+
+                                        Sub Category
+
+                                    </label>
+
+                                    <select name="subCategory" id="subCategory" class="form-control custom-input"
+                                        required>
+
+                                        <option value="">
+
+                                            Select Sub Category
+
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+                                <!-- Extra Sub Category -->
+
+                                <div class="mb-3">
+
+                                    <label class="text-secondary">
+
+                                        Extra Sub Category
+
+                                    </label>
+
+                                    <select name="extraSubCategory" id="extraSubCategory"
+                                        class="form-control custom-input" required>
+
+                                        <option value="">
+
+                                            Select Extra Sub Category
+
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+                                <!-- Product Name -->
+
+                                <div class="mb-3">
+
+                                    <label class="text-secondary">
+
+                                        Product Name
+
+                                    </label>
+
+                                    <input type="text" name="name" class="form-control custom-input" required>
+
+                                </div>
+
+                                <!-- Brand -->
+
+                                <div class="mb-3">
+
+                                    <label class="text-secondary">
+
+                                        Brand
+
+                                    </label>
+
+                                    <input type="text" name="brand" class="form-control custom-input">
+
+                                </div>
+
+                                <!-- Price -->
+
+                                <div class="mb-3">
+
+                                    <label class="text-secondary">
+
+                                        Price
+
+                                    </label>
+
+                                    <input type="number" name="price" class="form-control custom-input" required>
+
+                                </div>
+
+                                <!-- Sale Price -->
+
+                                <div class="mb-3">
+
+                                    <label class="text-secondary">
+
+                                        Sale Price
+
+                                    </label>
+
+                                    <input type="number" name="salePrice" class="form-control custom-input">
+
+                                </div>
+
+                                <!-- Quantity -->
+
+                                <div class="mb-3">
+
+                                    <label class="text-secondary">
+
+                                        Quantity
+
+                                    </label>
+
+                                    <input type="number" name="quantity" class="form-control custom-input" required>
+
+                                </div>
+
+                                <!-- Description -->
+
+                                <div class="mb-3">
+
+                                    <label class="text-secondary">
+
+                                        Description
+
+                                    </label>
+
+                                    <textarea name="description" rows="4" class="form-control custom-input"></textarea>
+
+                                </div>
+
+                                <!-- Image -->
+
+                                <div class="mb-3">
+
+                                    <label class="text-secondary">
+
+                                        Product Image
+
+                                    </label>
+
+                                    <input type="file" name="image" class="form-control">
+
+                                </div>
+
+                                <!-- Status -->
+
+                                <div class="mb-4">
+
+                                    <label class="text-secondary">
+
+                                        Status
+
+                                    </label>
+
+                                    <select name="status" class="form-control custom-input">
+
+                                        <option value="Active">
+
+                                            Active
+
+                                        </option>
+
+                                        <option value="Inactive">
+
+                                            Inactive
+
+                                        </option>
+
+                                    </select>
+
+                                </div>
+
+                                <button class="btn text-white px-5" style="background:#6c5dd3;">
+
+                                    Save Product
+
+                                </button>
+
+                                <a href="/product" class="btn btn-light">
+
+                                    Cancel
+
+                                </a>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+            </div>
+
+    </div>
+
+    <style>
+        .main-content-wrapper {
+            margin-left: 260px;
+            min-height: 100vh;
+            padding: 30px;
+            transition: all 0.3s ease-in-out;
+        }
+    
+        .custom-input {
+            background-color: #1e1e2f !important;
+            border: 1px solid #5c5780 !important;
+            border-radius: 10px !important;
+            padding: 10px 14px !important;
+            height: auto !important;
+            color: white !important;
+            transition: all 0.2s ease-in-out !important;
+        }
+    
+        .custom-input:focus {
+            background-color: #1e1e2f !important;
+            border-color: #6c5dd3 !important;
+            box-shadow: 0 0 0 3px rgba(108, 93, 211, 0.15) !important;
+        }
+    
+        .font-weight-500 {
+            font-weight: 500;
+        }
+    
+        select.custom-input option {
+            background-color: #1e1e2f;
+            color: white;
+        }
+    
+        ::placeholder {
+            /* background-color:transparent; */
+            color: rgba(209, 209, 209, 0.143) !important;
+        }
+    </style>
+    <script>
+
+        const category = document.getElementById("category");
+        const subCategory = document.getElementById("subCategory");
+        const extraSubCategory = document.getElementById("extraSubCategory");
+
+        // Load Sub Categories
+        category.addEventListener("change", async function () {
+
+            const id = this.value;
+
+            subCategory.innerHTML =
+                '<option value="">Select Sub Category</option>';
+
+            extraSubCategory.innerHTML =
+                '<option value="">Select Extra Sub Category</option>';
+
+            if (!id) return;
+
+            const res = await fetch("/product/get-subcategory/" + id);
+
+            const data = await res.json();
+
+            data.forEach(item => {
+
+                subCategory.innerHTML += `
+                <option value="${item._id}">
+                    ${item.name}
+                </option>
+            `;
+
+            });
+
+        });
+
+        // Load Extra Sub Categories
+        subCategory.addEventListener("change", async function () {
+
+            const id = this.value;
+
+            extraSubCategory.innerHTML =
+                '<option value="">Select Extra Sub Category</option>';
+
+            if (!id) return;
+
+            const res = await fetch("/product/get-extrasubcategory/" + id);
+
+            const data = await res.json();
+
+            data.forEach(item => {
+
+                extraSubCategory.innerHTML += `
+                <option value="${item._id}">
+                    ${item.name}
+                </option>
+            `;
+
+            });
+
+        });
+
+    </script>

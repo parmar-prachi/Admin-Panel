@@ -10,18 +10,18 @@ if (!fs.existsSync(uploadPath)) {
 }
 
 
-// ADD USER PAGE
+
 
 exports.addUser = async (req, res) => {
     try {
-        const currentUser = await User.findById(req.cookies.user);
+        const currentUser = await User.findById(req.user._id);
 
         if (!currentUser) {
             return res.redirect("/login");
         }
 
         res.render("add", {
-            user: currentUser   // send logged-in user data
+            user: currentUser   
         });
 
     } catch (err) {
@@ -31,86 +31,78 @@ exports.addUser = async (req, res) => {
 };
 
 
-// INSERT USER (CREATE NEW USER)
-
 exports.insertUser = async (req, res) => {
+
     try {
 
-        const userId = req.cookies.user;
+        const user = await User.findById(req.user._id);
 
-        const existingUser = await User.findById(userId);
+        if (!user) {
 
-        // If logged-in user exists → UPDATE instead of CREATE
-        if (existingUser) {
+            req.flash("error", "User not found.");
+            return res.redirect("/login");
 
-            existingUser.firstName = req.body.firstName;
-            existingUser.lastName = req.body.lastName;
-            existingUser.mobile = req.body.mobile;
-            existingUser.gender = req.body.gender;
-            existingUser.dob = req.body.dob;
-            existingUser.age = req.body.age;
-            existingUser.address = req.body.address;
-            existingUser.city = req.body.city;
-            existingUser.state = req.body.state;
-            existingUser.pincode = req.body.pincode;
-            existingUser.education = req.body.education;
-            existingUser.occupation = req.body.occupation;
-            existingUser.hobbies = req.body.hobbies
-                ? req.body.hobbies.split(",").map(h => h.trim())
-                : [];
-
-            // image update
-            if (req.file) {
-                if (existingUser.image && existingUser.image !== "default.png") {
-                    const imagePath = path.join(__dirname, "../uploads/users", existingUser.image);
-                    if (fs.existsSync(imagePath)) {
-                        fs.unlinkSync(imagePath);
-                    }
-                }
-
-                existingUser.image = req.file.filename;
-            }
-
-            await existingUser.save();
-
-            return res.redirect("/dashboard");
         }
 
-        // OTHERWISE → CREATE NEW USER (admin case)
-        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        // Update Profile
+        user.firstName = req.body.firstName || user.firstName;
+        user.lastName = req.body.lastName || user.lastName;
+        user.mobile = req.body.mobile || user.mobile;
+        user.gender = req.body.gender || user.gender;
+        user.dob = req.body.dob || user.dob;
+        user.age = req.body.age || user.age;
+        user.address = req.body.address || user.address;
+        user.city = req.body.city || user.city;
+        user.state = req.body.state || user.state;
+        user.pincode = req.body.pincode || user.pincode;
+        user.education = req.body.education || user.education;
+        user.occupation = req.body.occupation || user.occupation;
+        user.joiningDate = req.body.joiningDate || user.joiningDate;
+        user.status = req.body.status || user.status;
 
-        const newUser = new User({
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            username: req.body.username,
-            email: req.body.email,
-            password: hashedPassword,
-            mobile: req.body.mobile,
-            gender: req.body.gender,
-            dob: req.body.dob,
-            age: req.body.age,
-            address: req.body.address,
-            city: req.body.city,
-            state: req.body.state,
-            pincode: req.body.pincode,
-            education: req.body.education,
-            occupation: req.body.occupation,
-            joiningDate: req.body.joiningDate,
-            status: req.body.status,
-            hobbies: req.body.hobbies
-                ? req.body.hobbies.split(",").map(h => h.trim())
-                : [],
-            image: req.file ? req.file.filename : "default.png"
-        });
+        user.hobbies = req.body.hobbies
+            ? req.body.hobbies.split(",").map(h => h.trim())
+            : user.hobbies;
 
-        await newUser.save();
+        // Update Image
+        if (req.file) {
 
-        res.redirect("/users");
+            if (user.image && user.image !== "default.png") {
+
+                const imagePath = path.join(
+                    __dirname,
+                    "../uploads/users",
+                    user.image
+                );
+
+                if (fs.existsSync(imagePath)) {
+
+                    fs.unlinkSync(imagePath);
+
+                }
+
+            }
+
+            user.image = req.file.filename;
+
+        }
+
+        await user.save();
+
+        req.flash("success", "Profile updated successfully.");
+
+        res.redirect("/dashboard");
 
     } catch (err) {
+
         console.log(err);
-        res.status(500).send(err.message);
+
+        req.flash("error", "Something went wrong.");
+
+        res.redirect("back");
+
     }
+
 };
 
 
@@ -147,7 +139,9 @@ exports.getSingleUser = async (req, res) => {
         const user = await User.findById(req.params.id);
 
         if (!user) {
-            return res.send("User not found");
+            req.flash("error", "User not found.");
+
+            return res.redirect("/login");
         }
 
         res.render("view", { user });
@@ -182,23 +176,53 @@ exports.editUser = async (req, res) => {
 // UPDATE USER
 
 exports.updateUser = async (req, res) => {
+
     try {
 
         const user = await User.findById(req.params.id);
 
         if (!user) {
+
+            req.flash("error", "User not found.");
             return res.redirect("/users");
+
         }
 
 
+        // Check duplicate username
+        const existingUsername = await User.findOne({
+            username: req.body.username.trim(),
+            _id: { $ne: req.params.id }
+        });
+
+        if (existingUsername) {
+
+            req.flash("error", "Username already exists.");
+            return res.redirect("back");
+
+        }
+
+
+        // Check duplicate email
+        const existingEmail = await User.findOne({
+            email: req.body.email.trim().toLowerCase(),
+            _id: { $ne: req.params.id }
+        });
+
+        if (existingEmail) {
+
+            req.flash("error", "Email already exists.");
+            return res.redirect("back");
+
+        }
+
+
+        // Update fields
         user.firstName = req.body.firstName || user.firstName;
         user.lastName = req.body.lastName || user.lastName;
+        user.username = req.body.username || user.username;
         user.email = req.body.email || user.email;
         user.mobile = req.body.mobile || user.mobile;
-
-
-        user.username = req.body.username || user.username;
-
         user.gender = req.body.gender || user.gender;
         user.dob = req.body.dob || user.dob;
         user.age = req.body.age || user.age;
@@ -211,15 +235,22 @@ exports.updateUser = async (req, res) => {
         user.joiningDate = req.body.joiningDate || user.joiningDate;
         user.status = req.body.status || user.status;
 
+        // Only Super Admin can change role
+        if (req.user.role === "Super Admin") {
+            user.role = req.body.role || user.role;
+        }
 
+        // Hobbies
         user.hobbies = req.body.hobbies
             ? req.body.hobbies.split(",").map(h => h.trim())
             : user.hobbies;
 
 
+        // Update Image
         if (req.file) {
 
             if (user.image && user.image !== "default.png") {
+
                 const imagePath = path.join(
                     __dirname,
                     "../uploads/users",
@@ -227,21 +258,34 @@ exports.updateUser = async (req, res) => {
                 );
 
                 if (fs.existsSync(imagePath)) {
+
                     fs.unlinkSync(imagePath);
+
                 }
+
             }
 
             user.image = req.file.filename;
+
         }
 
+
         await user.save();
+
+        req.flash("success", "User updated successfully.");
 
         res.redirect("/users");
 
     } catch (err) {
+
         console.log(err);
-        res.status(500).send(err.message);
+
+        req.flash("error", "Something went wrong.");
+
+        res.redirect("back");
+
     }
+
 };
 
 // DELETE USER

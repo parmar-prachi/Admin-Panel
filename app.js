@@ -1,13 +1,24 @@
+require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const fs = require("fs");
-
+const session = require("express-session");
+const passport = require("./config/passport");
+const profileRoute = require("./routes/profileRoute");
 const connectDB = require("./config/db");
-
+const passwordRoute = require("./routes/passwordRoute");
+const flash = require("connect-flash");
 const dashboardRoute = require("./routes/dashboardRoute");
 const userRoute = require("./routes/userRoute");
 const authRoute = require("./routes/authRoutes");
+const adminRoute = require("./routes/adminRoute");
+const categoryRoute = require("./routes/categoryRoute");
+const subCategoryRoute = require("./routes/subCategoryRoute");
+const extraSubCategoryRoute = require("./routes/extraSubCategoryRoute");
+const productRoute = require("./routes/productRoute");
+const orderRoute = require("./routes/orderRoute");
+
 
 const app = express();
 
@@ -15,9 +26,37 @@ const app = express();
 connectDB();
 
 // Middleware
+
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(session({
+    secret: "full-admin-panel-secret-key",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 1000 * 60 * 60 
+    }
+}));
+
+app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());
+app.use((req, res, next) => {
+
+    res.locals.currentUser = req.user;
+
+    next();
+
+});
+app.use((req, res, next) => {
+
+    res.locals.success = req.flash("success");
+    res.locals.error = req.flash("error");
+
+    next();
+
+});
 
 // View Engine
 app.set("view engine", "ejs");
@@ -41,8 +80,17 @@ app.get("/", (req, res) => {
 app.use("/", authRoute);
 app.use("/", dashboardRoute);
 app.use("/users", userRoute);
+app.use("/", profileRoute);
+app.use("/", passwordRoute);
+app.use("/", adminRoute);
+app.use("/category", categoryRoute);
+app.use("/subcategory", subCategoryRoute);
+app.use("/extrasubcategory", extraSubCategoryRoute);
+app.use("/product", productRoute);
+app.use("/order", orderRoute);
 
 // 404
+
 app.use((req, res) => {
     res.status(404).send("404 Page Not Found");
 });

@@ -1,0 +1,183 @@
+<%- include('../header') %>
+
+    <div class="d-flex w-100" style="min-height: 100vh; background-color: #1e1e2f;">
+
+        <div class="d-flex w-100" style="min-height: 100vh;">
+
+            <%- include('../sidebar') %>
+
+                <div class="main-content-wrapper flex-grow-1" id="mainContent">
+
+                    <%- include('../navbar') %>
+
+                        <div class="container-fluid py-4">
+
+                            <div class="card-header border-0 pt-4 px-4">
+                                <h4 class="font-weight-bold text-white mb-2">
+                                    <span style="color: #6c5dd3; margin-right: 8px;">📝</span>
+                                    Edit Extra Sub Category
+                                </h4>
+
+                                <p class="text-white small mb-0">
+                                    Modify the deep classification details, status settings, and parent dependencies
+                                    below.
+                                </p>
+                            </div>
+
+                            <div class="card-body p-4" style="max-width: 700px;">
+
+                                <form
+                                    action="/extrasubcategory/update/<%= typeof extrasubcategory !== 'undefined' ? extrasubcategory._id : '' %>"
+                                    method="POST" enctype="multipart/form-data">
+
+                                    <div class="mb-3">
+                                        <label class="font-weight-500 text-secondary small">
+                                            Parent Category
+                                        </label>
+                                        <select name="category" class="form-control custom-input" required>
+                                            <option value="">Select Category</option>
+                                            <% categories.forEach(cat=> { %>
+                                                <option value="<%= cat._id %>" <%=typeof extrasubcategory !=='undefined'
+                                                    && extrasubcategory.category &&
+                                                    extrasubcategory.category.toString()===cat._id.toString()
+                                                    ? 'selected' : '' %>>
+                                                    <%= cat.name %>
+                                                </option>
+                                                <% }) %>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="font-weight-500 text-secondary small">
+                                            Sub Category
+                                        </label>
+                                        <select name="subCategory" class="form-control custom-input" required>
+                                            <option value="">Select Sub Category</option>
+                                            <% subCategories.forEach(sub=> { %>
+                                                <option value="<%= sub._id %>" <%=typeof extrasubcategory !=='undefined'
+                                                    && extrasubcategory.subcategory &&
+                                                    extrasubcategory.subcategory.toString()===sub._id.toString()
+                                                    ? 'selected' : '' %>>
+                                                    <%= sub.name %>
+                                                </option>
+                                                <% }) %>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="font-weight-500 text-secondary small">
+                                            Extra Sub Category Name
+                                        </label>
+                                        <input type="text" name="name" class="form-control custom-input"
+                                            value="<%= typeof extrasubcategory !== 'undefined' ? extrasubcategory.name : '' %>"
+                                            placeholder="e.g., Running Shoes, Wireless Headphones" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="font-weight-500 text-secondary small">
+                                            Description (Optional)
+                                        </label>
+                                        <textarea name="description" rows="4" class="form-control custom-input"
+                                            placeholder="Provide additional details regarding this sub-classification context..."><%= typeof extrasubcategory !== 'undefined' && extrasubcategory.description ? extrasubcategory.description : '' %></textarea>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="font-weight-500 text-secondary small">
+                                            Status
+                                        </label>
+                                        <select name="status" class="form-control custom-input">
+                                            <option value="Active" <%=typeof extrasubcategory !=='undefined' &&
+                                                extrasubcategory.status==='Active' ? 'selected' : '' %>>Active</option>
+                                            <option value="Inactive" <%=typeof extrasubcategory !=='undefined' &&
+                                                extrasubcategory.status==='Inactive' ? 'selected' : '' %>>Inactive
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="font-weight-500 text-secondary small">
+                                            Extra Sub Category Image
+                                        </label>
+
+                                        <% if (typeof extrasubcategory !=='undefined' && extrasubcategory.image) { %>
+                                            <div class="mb-2 d-flex align-items-center gap-2" style="gap: 10px;">
+                                                <img src="/uploads/<%= extrasubcategory.image %>" alt="Current Preview"
+                                                    class="current-image-preview">
+                                                <span class="text-white small opacity-75">Current image preview</span>
+                                            </div>
+                                            <% } %>
+
+                                                <div class="p-3 style-file-zone"
+                                                    style="border:2px dashed #5c5780; background:#252538; border-radius:10px;">
+                                                    <input type="file" name="image"
+                                                        class="form-control-file text-secondary small">
+                                                </div>
+                                    </div>
+
+                                    <div class="d-flex align-items-center justify-content-start mt-4" style="gap:12px;">
+                                        <button type="submit" class="btn text-white px-5 shadow-sm"
+                                            style="background-color:#6c5dd3; border-radius:10px; font-weight:500;">
+                                            📥 Save Changes
+                                        </button>
+                                        <a href="/extrasubcategory" class="btn btn-light px-4"
+                                            style="border-radius:10px; font-weight:500;">
+                                            Cancel
+                                        </a>
+                                    </div>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                </div>
+
+        </div>
+
+    </div>
+
+    <style>
+        .main-content-wrapper {
+            margin-left: 260px;
+            min-height: 100vh;
+            padding: 30px;
+            transition: all .3s ease-in-out;
+        }
+
+        .custom-input {
+            background: #1e1e2f !important;
+            border: 1px solid #5c5780 !important;
+            border-radius: 10px !important;
+            padding: 10px 14px !important;
+            height: auto !important;
+            color: white !important;
+        }
+
+        .custom-input:focus {
+            background: #1e1e2f !important;
+            border-color: #6c5dd3 !important;
+            box-shadow: 0 0 0 3px rgba(108, 93, 211, .15) !important;
+        }
+
+        .font-weight-500 {
+            font-weight: 500;
+        }
+
+        select.custom-input option {
+            background: #1e1e2f;
+            color: white;
+        }
+
+        ::placeholder {
+            color: rgba(209, 209, 209, .35) !important;
+        }
+
+        .current-image-preview {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #6c5dd3;
+        }
+    </style>

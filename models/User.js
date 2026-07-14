@@ -8,14 +8,17 @@ const userSchema = new mongoose.Schema({
     },
     username: {
         type: String,
-        required: true
+        required: true,
+        unique: true,
+        trim: true
     },
     email: {
         type: String,
         required: true,
         unique: true,
-        trim: true,       
-        lowercase: true },
+        lowercase: true,
+        trim: true
+    },
     password: {
         type: String,
         required: true
@@ -46,7 +49,21 @@ const userSchema = new mongoose.Schema({
     image: {
         type: String,
         default: "default.png"
-    }
+    },
+    otp: {
+        type: String,
+        default: null
+    },
+
+    otpExpiry: {
+        type: Date,
+        default: null
+    },
+    role: {
+        type: String,
+        enum: ["Super Admin", "Manager", "Employee"],
+        default: "Employee"
+    },
 }, {
     timestamps: true
 });

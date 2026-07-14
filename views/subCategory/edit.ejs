@@ -1,0 +1,158 @@
+<%- include('../header') %>
+
+    <div class="d-flex w-100" style="min-height: 100vh; background-color: #1e1e2f;">
+
+        <%- include('../sidebar') %>
+
+            <div class="main-content-wrapper flex-grow-1" id="mainContent">
+
+                <%- include('../navbar') %>
+
+                    <div class="container-fluid py-4">
+
+                        <div class="card-header border-0 pt-4 px-4">
+                            <h4 class="font-weight-bold text-white mb-2">
+                                <span style="color:#6c5dd3;">✏️</span> Edit Sub Category
+                            </h4>
+
+                            <p class="text-white small mb-0">
+                                Update Sub category information.
+                            </p>
+                        </div>
+
+                        <div class="card-body p-4">
+
+                            <form action="/subcategory/update/<%= subCategory._id %>" method="POST" enctype="multipart/form-data">
+
+                                <select name="category" class="form-control">
+                                
+                                    <% categories.forEach(cat=>{ %>
+                                
+                                        <option value="<%= cat._id %>" <%=String(cat._id)===String(subCategory.category) ? "selected" : "" %>>
+                                
+                                            <%= cat.name %>
+                                
+                                        </option>
+                                
+                                        <% }) %>
+                                
+                                </select>
+
+                                <!-- Sub Category Name -->
+
+                                <div class="mb-3">
+                                    <label class="font-weight-500 text-secondary small">
+                                       Sub Category Name
+                                    </label>
+
+                                    <input type="text" name="name" value="<%= subCategory.name %>" class="form-control">
+                                </div>
+
+                                <!-- Description -->
+                                <div class="mb-3">
+
+                                    <label class="font-weight-500 text-secondary small">
+                                        Description
+                                    </label>
+
+                                <textarea name="description" class="form-control"><%= subCategory.description %></textarea>
+
+                                </div>
+
+                                <!-- Status -->
+                                <select name="status" class="form-control">
+                                
+                                    <option value="Active" <%=subCategory.status==="Active" ? "selected" :"" %>>
+                                        Active
+                                    </option>
+                                
+                                    <option value="Inactive" <%=subCategory.status==="Inactive" ? "selected" :"" %>>
+                                        Inactive
+                                    </option>
+                                
+                                </select>
+
+                                <!-- Current Image -->
+                                <div class="mb-3">
+
+                                    <label class="font-weight-500 text-secondary small">
+                                        Current Image
+                                    </label>
+
+                                    <br>
+
+                                <% if(subCategory.image){ %>
+                                
+                                    <img src="/uploads/<%= subCategory.image %>" width="120" class="rounded mb-3">
+                                
+                                    <% } %>
+
+                                </div>
+
+                                <!-- New Image -->
+                                <div class="mb-4">
+
+                                    <label class="font-weight-500 text-secondary small">
+                                        Change Image
+                                    </label>
+
+                                    <input type="file" name="image" class="form-control custom-input">
+
+                                </div>
+
+                                <!-- Buttons -->
+                                <div class="d-flex justify-content-end">
+
+                                    <a href="/category" class="btn btn-light mr-2">
+
+                                        Cancel
+
+                                    </a>
+
+                                    <button type="submit" class="btn text-white ms-2" style="background:#6c5dd3;">
+
+                                        💾 Update Sub Category
+
+                                    </button>
+
+                                </div>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+            </div>
+
+    </div>
+
+    <style>
+        .main-content-wrapper {
+            margin-left: 260px;
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+        .custom-input {
+            background: #1e1e2f !important;
+            border: 1px solid #5c5780 !important;
+            color: white !important;
+            border-radius: 10px;
+        }
+
+        .custom-input:focus {
+            background: #1e1e2f !important;
+            border-color: #6c5dd3 !important;
+            box-shadow: 0 0 0 3px rgba(108, 93, 211, .2);
+        }
+
+        .custom-input option {
+            background: #1e1e2f;
+            color: white;
+        }
+        ::placeholder{
+            /* background-color:transparent; */
+            color: rgba(209, 209, 209, 0.143) !important;
+        }
+    </style>

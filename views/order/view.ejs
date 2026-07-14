@@ -1,0 +1,367 @@
+<%- include('../header') %>
+
+    <div class="d-flex w-100" style="min-height:100vh;background:#1e1e2f;">
+
+        <%- include('../sidebar') %>
+
+            <div class="main-content-wrapper flex-grow-1">
+
+                <%- include('../navbar') %>
+
+                    <div class="container-fluid py-4">
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+
+                            <div>
+
+                                <h4 class="text-white fw-bold">
+
+                                    📦 Order Details
+
+                                </h4>
+
+                                <p class="text-secondary">
+
+                                    Complete information about this order.
+
+                                </p>
+
+                            </div>
+
+                            <a href="/order" class="btn btn-light">
+
+                                ← Back
+
+                            </a>
+
+                        </div>
+
+                        <div class="row">
+
+                            <!-- Order Information -->
+
+                            <div class="col-md-6 mb-4">
+
+                                <div class="card shadow border-0" style="background:#222235;">
+
+                                    <div class="card-header text-white">
+
+                                        📦 Order Information
+
+                                    </div>
+
+                                    <div class="card-body">
+
+                                        <table class="table table-borderless text-white mb-0">
+
+                                            <tr>
+
+                                                <th width="40%">Order No</th>
+
+                                                <td>
+                                                    <%= order.orderNumber %>
+                                                </td>
+
+                                            </tr>
+
+                                            <tr>
+
+                                                <th>Order Date</th>
+
+                                                <td>
+
+                                                    <%= new Date(order.createdAt).toLocaleDateString() %>
+
+                                                </td>
+
+                                            </tr>
+
+                                            <tr>
+
+                                                <th>Status</th>
+
+                                                <td>
+
+                                                    <span class="badge bg-primary">
+
+                                                        <%= order.orderStatus %>
+
+                                                    </span>
+
+                                                </td>
+
+                                            </tr>
+
+                                            <tr>
+
+                                                <th>Payment</th>
+
+                                                <td>
+
+                                                    <span class="badge bg-success">
+
+                                                        <%= order.paymentStatus %>
+
+                                                    </span>
+
+                                                </td>
+
+                                            </tr>
+
+                                        </table>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                            <!-- Customer Information -->
+
+                            <div class="col-md-6 mb-4">
+
+                                <div class="card shadow border-0" style="background:#222235;">
+
+                                    <div class="card-header text-white">
+
+                                        👤 Customer Information
+
+                                    </div>
+
+                                    <div class="card-body">
+
+                                        <table class="table table-borderless text-white mb-0">
+
+                                            <tr>
+
+                                                <th width="40%">Customer</th>
+
+                                                <td>
+                                                    <%= order.customerName %>
+                                                </td>
+
+                                            </tr>
+
+                                            <tr>
+
+                                                <th>Email</th>
+
+                                                <td>
+                                                    <%= order.customerEmail %>
+                                                </td>
+
+                                            </tr>
+
+                                            <tr>
+
+                                                <th>Mobile</th>
+
+                                                <td>
+                                                    <%= order.customerMobile %>
+                                                </td>
+
+                                            </tr>
+
+                                        </table>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- Shipping Address -->
+
+                            <div class="col-md-6 mb-4">
+
+                                <div class="card shadow border-0" style="background:#222235;">
+
+                                    <div class="card-header text-white">
+
+                                        📍 Shipping Address
+
+                                    </div>
+
+                                    <div class="card-body text-white">
+
+                                        <p class="mb-1">
+                                            <%= order.address %>
+                                        </p>
+
+                                        <p class="mb-1">
+                                            <%= order.city %>,
+                                                <%= order.state %>
+                                        </p>
+
+                                        <p class="mb-0">
+                                            PIN :
+                                            <%= order.pincode %>
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- Product Information -->
+
+                            <div class="col-md-6 mb-4">
+
+                                <div class="card shadow border-0" style="background:#222235;">
+
+                                    <div class="card-header text-white">
+
+                                        🛍 Product Information
+
+                                    </div>
+
+                                    <div class="card-body">
+
+                                        <div class="d-flex align-items-center">
+
+                                            <img src="/uploads/<%= order.product.image %>" width="90" height="90"
+                                                style="border-radius:10px;object-fit:cover;">
+
+                                            <div class="ms-3">
+
+                                                <h5 class="text-white mb-2">
+
+                                                    <%= order.product.name %>
+
+                                                </h5>
+
+                                                <p class="text-secondary mb-1">
+
+                                                    Quantity :
+                                                    <%= order.quantity %>
+
+                                                </p>
+
+                                                <h5 style="color:#6c5dd3;">
+
+                                                    ₹<%= order.product.price %>
+
+                                                </h5>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <!-- Bill Summary -->
+
+                            <div class="col-md-6 mb-4">
+
+                                <div class="card shadow border-0" style="background:#222235;">
+
+                                    <div class="card-header text-white">
+
+                                        💰 Bill Summary
+
+                                    </div>
+
+                                    <div class="card-body">
+
+                                        <table class="table table-borderless text-white mb-0">
+
+                                            <tr>
+
+                                                <th>Subtotal</th>
+
+                                                <td class="text-end">
+
+                                                    ₹<%= order.subTotal %>
+
+                                                </td>
+
+                                            </tr>
+
+                                            <tr>
+
+                                                <th>Shipping</th>
+
+                                                <td class="text-end">
+
+                                                    ₹<%= order.shippingCharge %>
+
+                                                </td>
+
+                                            </tr>
+
+                                            <tr>
+
+                                                <th>Discount</th>
+
+                                                <td class="text-end">
+
+                                                    ₹<%= order.discount %>
+
+                                                </td>
+
+                                            </tr>
+
+                                            <tr>
+
+                                                <th>Grand Total</th>
+
+                                                <td class="text-end fw-bold text-success">
+
+                                                    ₹<%= order.grandTotal %>
+
+                                                </td>
+
+                                            </tr>
+
+                                        </table>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+            </div>
+
+    </div>
+    <style>
+        .main-content-wrapper {
+    
+            margin-left: 260px;
+            min-height: 100vh;
+            padding: 30px;
+    
+        }
+    
+        .table {
+    
+            color: white;
+    
+        }
+    
+        .table th {
+    
+            color: #bdbdbd;
+    
+        }
+    
+        .card {
+    
+            border-radius: 12px;
+    
+        }
+    </style>

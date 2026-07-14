@@ -1,0 +1,237 @@
+<%- include('../header') %>
+
+    <div class="d-flex w-100" style="min-height:100vh; background:#1e1e2f;">
+
+        <%- include('../sidebar') %>
+
+            <div class="main-content-wrapper flex-grow-1" id="mainContent">
+
+                <%- include('../navbar') %>
+
+                    <div class="container-fluid py-4">
+
+                        <div class="card-header border-0 pt-4 px-4">
+                            <h4 class="text-white fw-bold">
+                                <span style="color:#6c5dd3; margin-right: 8px;">📝</span> Edit Product
+                            </h4>
+                            <p class="text-secondary small mb-0">
+                                Modify product properties, pricing metrics, inventory counts, or images.
+                            </p>
+                        </div>
+
+                        <div class="card-body p-4" style="max-width:750px;">
+
+                            <form action="/product/update/<%= typeof product !== 'undefined' ? product._id : '' %>"
+                                method="POST" enctype="multipart/form-data">
+
+                                <div class="mb-3">
+                                    <label class="font-weight-500 text-secondary small">Category</label>
+                                    <select name="category" id="category" class="form-control custom-input" required>
+                                        <option value="">Select Category</option>
+                                        <% categories.forEach(cat=> { %>
+                                            <option value="<%= cat._id %>" <%=typeof product !=='undefined' &&
+                                                product.category && product.category.toString()===cat._id.toString()
+                                                ? 'selected' : '' %>>
+                                                <%= cat.name %>
+                                            </option>
+                                            <% }) %>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="font-weight-500 text-secondary small">Sub Category</label>
+                                    <select name="subCategory" id="subCategory" class="form-control custom-input"
+                                        required>
+                                        <option value="">Select Sub Category</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="font-weight-500 text-secondary small">Extra Sub Category</label>
+                                    <select name="extraSubCategory" id="extraSubCategory"
+                                        class="form-control custom-input" required>
+                                        <option value="">Select Extra Sub Category</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="font-weight-500 text-secondary small">Product Name</label>
+                                    <input type="text" name="name" class="form-control custom-input"
+                                        value="<%= typeof product !== 'undefined' ? product.name : '' %>" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="font-weight-500 text-secondary small">Brand</label>
+                                    <input type="text" name="brand" class="form-control custom-input"
+                                        value="<%= typeof product !== 'undefined' ? product.brand : '' %>">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="font-weight-500 text-secondary small">Price (₹)</label>
+                                    <input type="number" name="price" class="form-control custom-input"
+                                        value="<%= typeof product !== 'undefined' ? product.price : '' %>" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="font-weight-500 text-secondary small">Sale Price (₹)</label>
+                                    <input type="number" name="salePrice" class="form-control custom-input"
+                                        value="<%= typeof product !== 'undefined' ? product.salePrice : '' %>">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="font-weight-500 text-secondary small">Quantity</label>
+                                    <input type="number" name="quantity" class="form-control custom-input"
+                                        value="<%= typeof product !== 'undefined' ? product.quantity : '' %>" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="font-weight-500 text-secondary small">Description</label>
+                                    <textarea name="description" rows="4"
+                                        class="form-control custom-input"><%= typeof product !== 'undefined' && product.description ? product.description : '' %></textarea>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="font-weight-500 text-secondary small">Product Image</label>
+
+                                    <% if (typeof product !=='undefined' && product.image) { %>
+                                        <div class="mb-2 d-flex align-items-center gap-2" style="gap: 10px;">
+                                            <img src="/uploads/<%= product.image %>" alt="Current Preview"
+                                                class="current-image-preview">
+                                            <span class="text-white small opacity-75">Current image preview</span>
+                                        </div>
+                                        <% } %>
+
+                                            <div class="p-3 style-file-zone"
+                                                style="border:2px dashed #5c5780; background:#252538; border-radius:10px;">
+                                                <input type="file" name="image"
+                                                    class="form-control-file text-secondary small">
+                                            </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="font-weight-500 text-secondary small">Status</label>
+                                    <select name="status" class="form-control custom-input">
+                                        <option value="Active" <%=typeof product !=='undefined' &&
+                                            product.status==='Active' ? 'selected' : '' %>>Active</option>
+                                        <option value="Inactive" <%=typeof product !=='undefined' &&
+                                            product.status==='Inactive' ? 'selected' : '' %>>Inactive</option>
+                                    </select>
+                                </div>
+
+                                <div class="d-flex align-items-center justify-content-start mt-4" style="gap:12px;">
+                                    <button type="submit" class="btn text-white px-5"
+                                        style="background:#6c5dd3; border-radius:10px; font-weight:500;">
+                                        📥 Save Changes
+                                    </button>
+                                    <a href="/product" class="btn btn-light"
+                                        style="border-radius:10px; font-weight:500;">
+                                        Cancel
+                                    </a>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+            </div>
+    </div>
+
+    <style>
+        .main-content-wrapper {
+            margin-left: 260px;
+            min-height: 100vh;
+            padding: 30px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .custom-input {
+            background-color: #1e1e2f !important;
+            border: 1px solid #5c5780 !important;
+            border-radius: 10px !important;
+            padding: 10px 14px !important;
+            height: auto !important;
+            color: white !important;
+            transition: all 0.2s ease-in-out !important;
+        }
+
+        .custom-input:focus {
+            background-color: #1e1e2f !important;
+            border-color: #6c5dd3 !important;
+            box-shadow: 0 0 0 3px rgba(108, 93, 211, 0.15) !important;
+        }
+
+        .font-weight-500 {
+            font-weight: 500;
+        }
+
+        select.custom-input option {
+            background-color: #1e1e2f;
+            color: white;
+        }
+
+        ::placeholder {
+            color: rgba(209, 209, 209, 0.143) !important;
+        }
+
+        .current-image-preview {
+            width: 65px;
+            height: 65px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #6c5dd3;
+        }
+    </style>
+
+    <script>
+        const category = document.getElementById("category");
+        const subCategory = document.getElementById("subCategory");
+        const extraSubCategory = document.getElementById("extraSubCategory");
+
+        // Keep target ID constants passed directly via EJS for document hydration
+        const selectedSubId = "<%= typeof product !== 'undefined' && product.subCategory ? product.subCategory._id || product.subCategory : '' %>";
+        const selectedExtraId = "<%= typeof product !== 'undefined' && product.extraSubCategory ? product.extraSubCategory._id || product.extraSubCategory : '' %>";
+
+        // Helper fetch triggers
+        async function loadSubCategories(categoryId, selectedId = "") {
+            subCategory.innerHTML = '<option value="">Select Sub Category</option>';
+            extraSubCategory.innerHTML = '<option value="">Select Extra Sub Category</option>';
+            if (!categoryId) return;
+
+            const res = await fetch("/product/get-subcategory/" + categoryId);
+            const data = await res.json();
+            data.forEach(item => {
+                const isSelected = item._id.toString() === selectedId.toString() ? 'selected' : '';
+                subCategory.innerHTML += `<option value="${item._id}" ${isSelected}>${item.name}</option>`;
+            });
+        }
+
+        async function loadExtraSubCategories(subCategoryId, selectedId = "") {
+            extraSubCategory.innerHTML = '<option value="">Select Extra Sub Category</option>';
+            if (!subCategoryId) return;
+
+            const res = await fetch("/product/get-extrasubcategory/" + subCategoryId);
+            const data = await res.json();
+            data.forEach(item => {
+                const isSelected = item._id.toString() === selectedId.toString() ? 'selected' : '';
+                extraSubCategory.innerHTML += `<option value="${item._id}" ${isSelected}>${item.name}</option>`;
+            });
+        }
+
+        // Event triggers for changes
+        category.addEventListener("change", function () {
+            loadSubCategories(this.value);
+        });
+
+        subCategory.addEventListener("change", function () {
+            loadExtraSubCategories(this.value);
+        });
+
+        // Hydrate dropdowns sequentially on load if edit context exists
+        window.addEventListener("DOMContentLoaded", async function () {
+            if (category.value) {
+                await loadSubCategories(category.value, selectedSubId);
+                if (selectedSubId) {
+                    await loadExtraSubCategories(selectedSubId, selectedExtraId);
+                }
+            }
+        });
+    </script>

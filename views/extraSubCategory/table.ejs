@@ -1,0 +1,450 @@
+<%- include('../header') %>
+
+    <div class="d-flex w-100" style="min-height:100vh;background:#1e1e2f;">
+
+        <%- include('../sidebar') %>
+
+            <div class="main-content-wrapper flex-grow-1">
+
+                <%- include('../navbar') %>
+
+                    <div class="container-fluid py-4">
+
+                        <!-- Page Heading -->
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+
+                            <div>
+
+                                <h4 class="text-white fw-bold mb-1">
+                                    ✨ Extra Sub Categories
+                                </h4>
+
+                                <p class="text-secondary mb-0">
+                                    Manage deep system classifications and nested catalog layers.
+                                </p>
+
+                            </div>
+
+                            <a href="/extrasubcategory/add" class="btn text-white px-4"
+                                style="background:#6c5dd3;border-radius:10px;">
+
+                                ➕ Add Extra Sub Category
+
+                            </a>
+
+                        </div>
+
+
+                        <!-- Search -->
+                        <form action="/extrasubcategory" method="GET" class="d-flex align-items-center mb-4"
+                            style="gap:10px;">
+
+                            <input type="text" name="search" class="form-control custom-input" placeholder="Search..."
+                                value="<%= search %>">
+
+                            <select name="status" class="form-control custom-input" style="max-width:180px;">
+
+                                <option value="" <%=status==="" ? "selected" : "" %>>
+                                    All Status
+                                </option>
+
+                                <option value="Active" <%=status==="Active" ? "selected" : "" %>>
+                                    Active
+                                </option>
+
+                                <option value="Inactive" <%=status==="Inactive" ? "selected" : "" %>>
+                                    Inactive
+                                </option>
+
+                            </select>
+
+                            <button class="btn text-white" style="background:#6c5dd3;">
+
+                                Filter
+
+                            </button>
+
+                            <a href="/extrasubcategory" class="btn btn-light">
+
+                                Reset
+
+                            </a>
+
+                        </form>
+
+
+                        <!-- Table -->
+
+                        <div class="table-responsive style-table-container">
+
+                            <table class="table align-middle mb-0 text-white">
+
+                                <thead>
+
+                                    <tr>
+
+                                        <th>ID</th>
+
+                                        <th>Image</th>
+
+                                        <th>Parent Category</th>
+
+                                        <th>Sub Category</th>
+
+                                        <th>Extra Sub Category</th>
+
+                                        <th>Status</th>
+
+                                        <th class="text-center">Actions</th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody>
+
+                                    <% if(extraSubCategories.length){ %>
+
+                                        <% extraSubCategories.forEach(function(extsub,index){ %>
+
+                                            <tr>
+
+                                                <td>
+                                                    <%= index+1 %>
+                                                </td>
+
+                                                <!-- Image -->
+                                                <td>
+
+                                                    <% if(extsub.image){ %>
+
+                                                        <img src="/uploads/<%= extsub.image %>"
+                                                            class="category-thumbnail" alt="<%= extsub.name %>">
+
+                                                        <% }else{ %>
+
+                                                            <div class="category-thumbnail-placeholder">
+
+                                                                📦
+
+                                                            </div>
+
+                                                            <% } %>
+
+                                                </td>
+
+                                                <!-- Category -->
+                                                <td>
+
+                                                    <%= extsub.category ? extsub.category.name : "-" %>
+
+                                                </td>
+
+                                                <!-- Sub Category -->
+                                                <td>
+
+                                                    <%= extsub.subCategory ? extsub.subCategory.name : "-" %>
+
+                                                </td>
+
+                                                <!-- Name -->
+                                                <td class="fw-bold">
+
+                                                    <%= extsub.name %>
+
+                                                </td>
+
+                                                <!-- Status -->
+                                                <td>
+
+                                                    <% if(extsub.status==="Active" ){ %>
+
+                                                        <span class="badge-active px-3 py-2 rounded-pill">
+
+                                                            Active
+
+                                                        </span>
+
+                                                        <% }else{ %>
+
+                                                            <span class="badge-inactive px-3 py-2 rounded-pill">
+
+                                                                Inactive
+
+                                                            </span>
+
+                                                            <% } %>
+
+                                                </td>
+
+                                                <!-- Actions -->
+                                                <td class="text-center">
+
+                                                    <a href="/extrasubcategory/edit/<%= extsub._id %>"
+                                                        class="btn btn-sm text-white action-btn-hover"
+                                                        style="background:#2a2a40;">
+
+                                                        <i class="bi bi-pencil"></i>
+
+                                                    </a>
+
+                                                    <a href="/extrasubcategory/delete/<%= extsub._id %>"
+                                                        class="btn btn-sm text-white action-btn-hover"
+                                                        style="background:#2a2a40;"
+                                                        onclick="return confirm('Delete this Extra Sub Category?')">
+
+                                                        <i class="bi bi-trash"></i>
+
+                                                    </a>
+
+                                                </td>
+
+                                            </tr>
+
+                                            <% }) %>
+
+                                                <% }else{ %>
+
+                                                    <tr>
+
+                                                        <td colspan="7" class="text-center py-5">
+
+                                                            No Extra Sub Categories Found.
+
+                                                        </td>
+
+                                                    </tr>
+
+                                                    <% } %>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+
+                        <!-- Pagination -->
+
+                        <% if(totalPages>1){ %>
+
+                            <nav class="mt-4">
+
+                                <ul class="pagination justify-content-center">
+
+                                    <% if(page>1){ %>
+
+                                        <li class="page-item">
+
+                                            <a class="page-link"
+                                                href="/extrasubcategory?page=<%= page-1 %>&search=<%= search %>&status=<%= status %>">
+
+                                                Previous
+
+                                            </a>
+
+                                        </li>
+
+                                        <% } %>
+
+                                            <% for(let i=1;i<=totalPages;i++){ %>
+
+                                                <li class="page-item <%= page===i ? 'active' : '' %>">
+
+                                                    <a class="page-link"
+                                                        href="/extrasubcategory?page=<%= i %>&search=<%= search %>&status=<%= status %>">
+
+                                                        <%= i %>
+
+                                                    </a>
+
+                                                </li>
+
+                                                <% } %>
+
+                                                    <% if(page<totalPages){ %>
+
+                                                        <li class="page-item">
+
+                                                            <a class="page-link"
+                                                                href="/extrasubcategory?page=<%= page+1 %>&search=<%= search %>&status=<%= status %>">
+
+                                                                Next
+
+                                                            </a>
+
+                                                        </li>
+
+                                                        <% } %>
+
+                                </ul>
+
+                            </nav>
+
+                            <% } %>
+
+                    </div>
+
+            </div>
+
+    </div>
+    <style>
+        .main-content-wrapper {
+            margin-left: 260px;
+            min-height: 100vh;
+            padding: 30px;
+            transition: all .3s ease;
+        }
+
+    
+        .custom-input {
+            background: #1e1e2f !important;
+            border: 1px solid #5c5780 !important;
+            color: #fff !important;
+            border-radius: 10px !important;
+            height: 45px;
+        }
+    
+        .custom-input:focus {
+            background: #1e1e2f !important;
+            color: #fff !important;
+            border-color: #6c5dd3 !important;
+            box-shadow: 0 0 0 3px rgba(108, 93, 211, .15) !important;
+        }
+    
+        .custom-input::placeholder {
+            color: rgba(255, 255, 255, .35);
+        }
+    
+        select.custom-input option {
+            background: #1e1e2f;
+            color: #fff;
+        }
+    
+        .style-table-container {
+            background: #1a1a26;
+            border: 1px solid #2d3238;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+    
+        .table {
+            margin-bottom: 0;
+        }
+    
+        .table thead {
+            background: #222235;
+        }
+    
+        .table thead th {
+            color: #a7a7b8;
+            text-transform: uppercase;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            padding: 18px;
+        }
+    
+        .table tbody td {
+            padding: 18px;
+            vertical-align: middle;
+            border-top: 1px solid #2b2b3c;
+            color: #464646;
+        }
+    
+        .table tbody tr:hover {
+            background: #252538;
+            transition: .2s;
+        }
+    
+
+    
+        .category-thumbnail {
+            width: 55px;
+            height: 55px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #44445f;
+        }
+    
+        .category-thumbnail-placeholder {
+            width: 55px;
+            height: 55px;
+            background: #252538;
+            border: 1px dashed #555;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+        }
+    
+
+    
+        .badge-active {
+            background: rgba(40, 167, 69, .15);
+            color: #28a745;
+            font-weight: 600;
+        }
+    
+        .badge-inactive {
+            background: rgba(220, 53, 69, .15);
+            color: #dc3545;
+            font-weight: 600;
+        }
+    
+
+    
+        .action-btn-hover {
+            width: 38px;
+            height: 38px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            transition: .2s;
+            margin: 0 2px;
+        }
+    
+        .action-btn-hover:hover {
+            background: #6c5dd3 !important;
+            transform: translateY(-2px);
+        }
+    
+
+    
+        .pagination .page-link {
+            background: #222235;
+            color: #fff;
+            border: 1px solid #555;
+            margin: 0 3px;
+            border-radius: 8px;
+        }
+    
+        .pagination .page-link:hover {
+            background: #6c5dd3;
+            border-color: #6c5dd3;
+            color: #fff;
+        }
+    
+        .pagination .page-item.active .page-link {
+            background: #6c5dd3;
+            border-color: #6c5dd3;
+            color: #fff;
+        }
+    
+
+    
+        @media(max-width:992px) {
+    
+            .main-content-wrapper {
+                margin-left: 0;
+                padding: 20px;
+            }
+    
+            .table {
+                min-width: 900px;
+            }
+    
+        }
+    </style>
