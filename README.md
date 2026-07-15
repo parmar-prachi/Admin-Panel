@@ -323,11 +323,6 @@ http://localhost:8000
 
 ---
 
-DASHBOARD-PAGE :
-
-
-<img width="1263" height="658" alt="dashboard-page" src="https://github.com/user-attachments/assets/a42c1d48-06e9-4cc3-adda-c35683639a7e" />
-
 SIDEBAR ::
 
 
