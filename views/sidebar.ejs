@@ -9,97 +9,171 @@
 
         <ul class="nav flex-column gap-2">
 
+            <!-- Dashboard -->
+
             <li class="nav-item mb-2">
-                <a href="/dashboard"
-                    class="nav-link text-white active-link d-flex align-items-center gap-3 p-2.5 px-3 rounded-lg">
-                    <span>📊</span> Dashboard
+                <a href="/dashboard" class="nav-link text-white active-link d-flex align-items-center">
+                    📊 Dashboard
                 </a>
             </li>
+
 
             <li class="nav-item mt-3 mb-1">
-                <small class="text-uppercase tracking-wider font-weight-bold"
-                    style="color: #808191; font-size: 0.75rem;">
-                    User Management
+                <small class="text-uppercase text-secondary">
+                    Logged In
                 </small>
             </li>
 
-            <li class="nav-item">
-                <a href="/users/add"
-                    class="nav-link text-white opacity-75 hover-link d-flex align-items-center gap-3 p-2.5 px-3 rounded-lg">
-                    <span>➕</span> Add User
-                </a>
-            </li>
+            <div class="text-center text-white mb-4">
 
-            <li class="nav-item">
-                <a href="/users"
-                    class="nav-link text-white opacity-75 hover-link d-flex align-items-center gap-3 p-2.5 px-3 rounded-lg">
-                    <span>👥</span> View Users
-                </a>
-            </li>
+                <h6>
+                    <%= currentUser.firstName %>
+                        <%= currentUser.lastName %>
+                </h6>
 
-            <li class="nav-item">
-                <a href="/admin"
-                    class="nav-link text-white opacity-75 hover-link d-flex align-items-center gap-3 p-2.5 px-3 rounded-lg">
-                    <i class="fa-solid fa-user-shield" style="font-size: 1.1rem; width: 20px; text-align: center;"></i>
-                    Admin Management
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a href="/category"
-                    class="nav-link text-white opacity-75 hover-link d-flex align-items-center gap-3 p-2.5 px-3 rounded-lg">
-                    <i class="fa-solid fa-layer-group" style="font-size: 1.1rem; width: 20px; text-align: center;"></i>
-                    Category
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/subcategory"
-                class="nav-link text-white opacity-75 hover-link d-flex align-items-center gap-3 p-2.5 px-3 rounded-lg">
-                    <i class="bi bi-diagram-3" style="font-size: 1.1rem; width: 20px; text-align: center;"></i>
-                    Sub Category
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/extrasubcategory"
-                class="nav-link text-white opacity-75 hover-link d-flex align-items-center gap-3 p-2.5 px-3 rounded-lg">
-                    <i class="bi bi-diagram-2" style="font-size: 1.1rem; width: 20px; text-align: center;"></i>
-                    Extra Sub Category
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/product"
-                    class="nav-link text-white opacity-75 hover-link d-flex align-items-center gap-3 p-2.5 px-3 rounded-lg">
-                    <i class="bi bi-box" style="font-size: 1.1rem; width: 20px; text-align: center;"></i>
-                   Product
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/order"
-                    class="nav-link text-white opacity-75 hover-link d-flex align-items-center gap-3 p-2.5 px-3 rounded-lg">
-                    <i class="bi bi-box-seam-fill" style="font-size: 1.1rem; width: 20px; text-align: center;"></i>
-                    Order
-                </a>
-            </li>
-            <li class="nav-item mt-4 mb-1">
-                <small class="text-uppercase tracking-wider font-weight-bold"
-                    style="color: #808191; font-size: 0.75rem;">
-                    Authentication
+                <small class="text-warning">
+                    <%= currentUser.role %>
                 </small>
-            </li>
 
-            <li class="nav-item">
-                <a href="/signup"
-                    class="nav-link text-white opacity-75 hover-link d-flex align-items-center gap-3 p-2.5 px-3 rounded-lg">
-                    <span>👤</span> Signup
-                </a>
-            </li>
+            </div>
 
-            <li class="nav-item">
-                <a href="/login"
-                    class="nav-link text-white opacity-75 hover-link d-flex align-items-center gap-3 p-2.5 px-3 rounded-lg">
-                    <span>🔑</span> Login
-                </a>
-            </li>
+            <!--  SUPER ADMIN  -->
+
+            <% if(currentUser.role==="Super Admin" ){ %>
+
+                <li class="nav-item">
+                    <a href="/users/add" class="nav-link text-white">➕ Add User</a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="/users" class="nav-link text-white">👥 Users</a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="/category" class="nav-link text-white">
+                        📂 Category
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="/subcategory" class="nav-link text-white">
+                        📁 Sub Category
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="/extrasubcategory" class="nav-link text-white">
+                        🗂 Extra Category
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="/product" class="nav-link text-white">
+                        📦 Product
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="/order" class="nav-link text-white">
+                        🛒 Orders
+                    </a>
+                </li>
+
+                <% } %>
+
+                    <!-- ADMIN  -->
+
+                    <% if(currentUser.role==="Admin" ){ %>
+
+                        <li class="nav-item">
+                            <a href="/users" class="nav-link text-white">
+                                👥 Users
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="/category" class="nav-link text-white">
+                                📂 Category
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="/subcategory" class="nav-link text-white">
+                                📁 Sub Category
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="/extrasubcategory" class="nav-link text-white">
+                                🗂 Extra Category
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="/product" class="nav-link text-white">
+                                📦 Product
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="/order" class="nav-link text-white">
+                                🛒 Orders
+                            </a>
+                        </li>
+
+                        <% } %>
+
+                            <!--  MANAGER  -->
+
+                            <% if(currentUser.role==="Manager" ){ %>
+
+                                <li class="nav-item">
+                                    <a href="/category" class="nav-link text-white">
+                                        📂 Category
+                                    </a>
+                                </li>
+
+                                <li class="nav-item">
+                                    <a href="/product" class="nav-link text-white">
+                                        📦 Product
+                                    </a>
+                                </li>
+
+                                <% } %>
+
+
+                                    <!--  EMPLOYEE  -->
+
+                                    <% if(currentUser.role==="Employee" ){ %>
+
+                                        <li class="nav-item">
+                                            <a href="/product" class="nav-link text-white">
+                                                📦 Product
+                                            </a>
+                                        </li>
+
+                                        <% } %>
+
+
+
+                                            <li class="nav-item mt-4">
+                                                <a href="/profile" class="nav-link text-white">
+                                                    👤 My Profile
+                                                </a>
+                                            </li>
+
+                                            <li class="nav-item">
+                                                <a href="/profile/change-password" class="nav-link text-white">
+                                                    🔒 Change Password
+                                                </a>
+                                            </li>
+
+                                            <li class="nav-item">
+                                                <a href="/logout" class="nav-link text-danger">
+                                                    🚪 Logout
+                                                </a>
+                                            </li>
+
         </ul>
     </div>
 </div>

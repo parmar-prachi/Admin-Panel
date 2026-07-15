@@ -1,24 +1,36 @@
 const express = require("express");
 const router = express.Router();
+
 const upload = require("../config/subCategoryMulter");
 
 const subCategoryController = require("../controllers/subCategoryController");
+
 const sessionAuth = require("../middleware/sessionAuth");
 const roleAuth = require("../middleware/roleAuth");
+
+
+// View
 
 router.get(
     "/",
     sessionAuth,
-    roleAuth("Super Admin","Admin"),
-    subCategoryController.viewPage
+    roleAuth("Super Admin", "Admin"),
+    subCategoryController.viewSubCategoryPage
 );
+
+
+// Add Page
 
 router.get(
     "/add",
     sessionAuth,
-    roleAuth("Super Admin","Admin"),
-    subCategoryController.addPage
+    roleAuth("Super Admin", "Admin"),
+    subCategoryController.addSubCategoryPage
 );
+
+
+// Insert
+
 router.post(
     "/add",
     sessionAuth,
@@ -26,15 +38,20 @@ router.post(
     upload.single("image"),
     subCategoryController.insertSubCategory
 );
+
+
 // Edit Page
+
 router.get(
     "/edit/:id",
     sessionAuth,
     roleAuth("Super Admin", "Admin"),
-    subCategoryController.editPage
+    subCategoryController.editSubCategoryPage
 );
 
+
 // Update
+
 router.post(
     "/update/:id",
     sessionAuth,
@@ -43,17 +60,25 @@ router.post(
     subCategoryController.updateSubCategory
 );
 
+
 // Delete
+
 router.get(
     "/delete/:id",
     sessionAuth,
     roleAuth("Super Admin", "Admin"),
     subCategoryController.deleteSubCategory
 );
+
+
+// Status
+
 router.get(
     "/status/:id",
     sessionAuth,
     roleAuth("Super Admin", "Admin"),
     subCategoryController.toggleStatus
 );
+
+
 module.exports = router;

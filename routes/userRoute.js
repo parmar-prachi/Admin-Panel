@@ -1,44 +1,66 @@
 const express = require("express");
 const router = express.Router();
+
+const userController = require("../controllers/userController");
 const upload = require("../config/multer");
+
 const sessionAuth = require("../middleware/sessionAuth");
 const roleAuth = require("../middleware/roleAuth");
 
-const userController = require("../controllers/userController");
+// Add User
+router.get(
+    "/add",
+    sessionAuth,
+    roleAuth("Super Admin", "Admin"),
+    userController.addUser
+);
 
-// Routes
+router.post(
+    "/add",
+    sessionAuth,
+    roleAuth("Super Admin", "Admin"),
+    upload.single("image"),
+    userController.insertUser
+);
 
+// View Users
 router.get(
     "/",
     sessionAuth,
-    roleAuth("Super Admin"),
+    roleAuth("Super Admin", "Admin"),
     userController.viewUsers
 );
 
-router.get("/add", userController.addUser);
-
-router.post(
-
-    "/add",
-
-    upload.single("image"),
-
-    userController.insertUser
-
+// Single User
+router.get(
+    "/view/:id",
+    sessionAuth,
+    roleAuth("Super Admin", "Admin"),
+    userController.getSingleUser
 );
-// Edit User Page
-router.get("/edit/:id", userController.editUser);
 
-// Update User
+// Edit User
+router.get(
+    "/edit/:id",
+    sessionAuth,
+    roleAuth("Super Admin", "Admin"),
+    userController.editUser
+);
+
 router.post(
     "/update/:id",
+    sessionAuth,
+    roleAuth("Super Admin", "Admin"),
     upload.single("image"),
     userController.updateUser
 );
 
-router.get("/:id", userController.getSingleUser)
-
-router.get("/delete/:id", userController.deleteUser);
-
+// Delete User
+router.get(
+    "/delete/:id",
+    sessionAuth,
+    roleAuth("Super Admin"),
+    userController.deleteUser
+);
 
 module.exports = router;

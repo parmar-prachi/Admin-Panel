@@ -2,12 +2,6 @@ const mongoose = require("mongoose");
 
 const extraSubCategorySchema = new mongoose.Schema({
 
-    category: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Category",
-        required: true
-    },
-
     subCategory: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "SubCategory",
@@ -20,15 +14,9 @@ const extraSubCategorySchema = new mongoose.Schema({
         trim: true
     },
 
-    description: {
-        type: String,
-        default: ""
-    },
+    description: String,
 
-    image: {
-        type: String,
-        default: ""
-    },
+    image: String,
 
     status: {
         type: String,
@@ -40,4 +28,7 @@ const extraSubCategorySchema = new mongoose.Schema({
     timestamps: true
 });
 
-module.exports = mongoose.model("ExtraSubCategory", extraSubCategorySchema);
+module.exports = mongoose.model(
+    "ExtraSubCategory",
+    extraSubCategorySchema
+);

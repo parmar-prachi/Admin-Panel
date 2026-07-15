@@ -42,7 +42,11 @@
                                     <label class="font-weight-500 text-secondary small">Sub Category</label>
                                     <select name="subCategory" id="subCategory" class="form-control custom-input"
                                         required>
-                                        <option value="">Select Sub Category</option>
+
+                                        <option value="">
+                                            Select Sub Category
+                                        </option>
+
                                     </select>
                                 </div>
 
@@ -50,7 +54,11 @@
                                     <label class="font-weight-500 text-secondary small">Extra Sub Category</label>
                                     <select name="extraSubCategory" id="extraSubCategory"
                                         class="form-control custom-input" required>
-                                        <option value="">Select Extra Sub Category</option>
+
+                                        <option value="">
+                                            Select Extra Sub Category
+                                        </option>
+
                                     </select>
                                 </div>
 
@@ -89,25 +97,98 @@
                                     <textarea name="description" rows="4"
                                         class="form-control custom-input"><%= typeof product !== 'undefined' && product.description ? product.description : '' %></textarea>
                                 </div>
+                                <!-- Thumbnail Image -->
 
                                 <div class="mb-3">
-                                    <label class="font-weight-500 text-secondary small">Product Image</label>
 
-                                    <% if (typeof product !=='undefined' && product.image) { %>
-                                        <div class="mb-2 d-flex align-items-center gap-2" style="gap: 10px;">
-                                            <img src="/uploads/<%= product.image %>" alt="Current Preview"
-                                                class="current-image-preview">
-                                            <span class="text-white small opacity-75">Current image preview</span>
+                                    <label class="font-weight-500 text-secondary small">
+                                        Product Thumbnail
+                                    </label>
+
+
+                                    <% if (product.thumbnail) { %>
+
+                                        <div class="mb-2 d-flex align-items-center" style="gap:10px;">
+
+                                            <img src="/uploads/<%= product.thumbnail %>" alt="Current Thumbnail"
+                                                class="current-image-preview"
+                                                style="width:80px;height:80px;object-fit:cover;border-radius:10px;">
+
+                                            <span class="text-white small opacity-75">
+                                                Current thumbnail
+                                            </span>
+
                                         </div>
+
                                         <% } %>
 
-                                            <div class="p-3 style-file-zone"
-                                                style="border:2px dashed #5c5780; background:#252538; border-radius:10px;">
-                                                <input type="file" name="image"
+
+
+                                            <div class="p-3"
+                                                style="border:2px dashed #5c5780;background:#252538;border-radius:10px;">
+
+                                                <input type="file" name="thumbnail"
                                                     class="form-control-file text-secondary small">
+
                                             </div>
+
+
                                 </div>
 
+
+
+                                <!-- Gallery Images -->
+
+                                <div class="mb-3">
+
+                                    <label class="font-weight-500 text-secondary small">
+                                        Product Gallery Images
+                                    </label>
+
+
+
+                                    <% if(product.gallery && product.gallery.length> 0){ %>
+
+
+                                        <div class="d-flex flex-wrap mb-3" style="gap:10px;">
+
+
+                                            <% product.gallery.forEach(img=>{ %>
+
+
+                                                <img src="/uploads/<%= img %>" style="
+                    width:70px;
+                    height:70px;
+                    object-fit:cover;
+                    border-radius:8px;
+                    ">
+
+
+                                                <% }) %>
+
+
+                                        </div>
+
+
+                                        <% } %>
+
+
+
+
+                                            <div class="p-3"
+                                                style="border:2px dashed #5c5780;background:#252538;border-radius:10px;">
+
+
+                                                <input type="file" name="gallery" multiple
+                                                    class="form-control-file text-secondary small">
+
+
+                                            </div>
+
+
+                                </div>
+
+                                <!-- Status -->
                                 <div class="mb-4">
                                     <label class="font-weight-500 text-secondary small">Status</label>
                                     <select name="status" class="form-control custom-input">
@@ -180,58 +261,170 @@
             border: 1px solid #6c5dd3;
         }
     </style>
-
     <script>
-        const category = document.getElementById("category");
-        const subCategory = document.getElementById("subCategory");
-        const extraSubCategory = document.getElementById("extraSubCategory");
 
-        // Keep target ID constants passed directly via EJS for document hydration
-        const selectedSubId = "<%= typeof product !== 'undefined' && product.subCategory ? product.subCategory._id || product.subCategory : '' %>";
-        const selectedExtraId = "<%= typeof product !== 'undefined' && product.extraSubCategory ? product.extraSubCategory._id || product.extraSubCategory : '' %>";
 
-        // Helper fetch triggers
-        async function loadSubCategories(categoryId, selectedId = "") {
-            subCategory.innerHTML = '<option value="">Select Sub Category</option>';
-            extraSubCategory.innerHTML = '<option value="">Select Extra Sub Category</option>';
-            if (!categoryId) return;
+        let selectedCategory =
+            "<%= product.category %>";
 
-            const res = await fetch("/product/get-subcategory/" + categoryId);
-            const data = await res.json();
-            data.forEach(item => {
-                const isSelected = item._id.toString() === selectedId.toString() ? 'selected' : '';
-                subCategory.innerHTML += `<option value="${item._id}" ${isSelected}>${item.name}</option>`;
-            });
+
+        let selectedSubCategory =
+            "<%= product.subCategory %>";
+
+
+        let selectedExtraSubCategory =
+            "<%= product.extraSubCategory %>";
+
+
+        // Load Sub Categories
+
+        function loadSubCategories(categoryId) {
+
+
+            let subCategory =
+                document.getElementById("subCategory");
+
+
+            subCategory.innerHTML =
+                `<option value="">Select Sub Category</option>`;
+
+
+
+            fetch("/product/get-subcategories/" + categoryId)
+
+                .then(res => res.json())
+
+                .then(data => {
+
+
+                    data.forEach(sub => {
+
+
+                        let option =
+                            document.createElement("option");
+
+
+                        option.value = sub._id;
+
+
+                        option.textContent = sub.name;
+
+
+
+                        if (sub._id == selectedSubCategory) {
+
+                            option.selected = true;
+
+                        }
+
+
+                        subCategory.appendChild(option);
+
+
+
+                    });
+
+                    loadExtraSubCategories(selectedSubCategory);
+
+                });
+
         }
+        // Load Extra Sub Categories
 
-        async function loadExtraSubCategories(subCategoryId, selectedId = "") {
-            extraSubCategory.innerHTML = '<option value="">Select Extra Sub Category</option>';
-            if (!subCategoryId) return;
+        function loadExtraSubCategories(subCategoryId) {
 
-            const res = await fetch("/product/get-extrasubcategory/" + subCategoryId);
-            const data = await res.json();
-            data.forEach(item => {
-                const isSelected = item._id.toString() === selectedId.toString() ? 'selected' : '';
-                extraSubCategory.innerHTML += `<option value="${item._id}" ${isSelected}>${item.name}</option>`;
-            });
+
+            let extra =
+                document.getElementById("extraSubCategory");
+
+
+
+            extra.innerHTML =
+                `<option value="">Select Extra Sub Category</option>`;
+
+
+
+            fetch("/product/get-extrasubcategories/" + subCategoryId)
+
+                .then(res => res.json())
+
+                .then(data => {
+
+
+                    data.forEach(item => {
+
+
+                        let option =
+                            document.createElement("option");
+
+
+                        option.value = item._id;
+
+
+                        option.textContent = item.name;
+
+
+
+                        if (item._id == selectedExtraSubCategory) {
+
+                            option.selected = true;
+
+                        }
+
+
+                        extra.appendChild(option);
+
+
+
+                    });
+
+
+
+                });
+
+
+
         }
+        // Page Load
 
-        // Event triggers for changes
-        category.addEventListener("change", function () {
-            loadSubCategories(this.value);
-        });
+        document.addEventListener("DOMContentLoaded", () => {
 
-        subCategory.addEventListener("change", function () {
-            loadExtraSubCategories(this.value);
-        });
 
-        // Hydrate dropdowns sequentially on load if edit context exists
-        window.addEventListener("DOMContentLoaded", async function () {
-            if (category.value) {
-                await loadSubCategories(category.value, selectedSubId);
-                if (selectedSubId) {
-                    await loadExtraSubCategories(selectedSubId, selectedExtraId);
-                }
+            if (selectedCategory) {
+
+                loadSubCategories(selectedCategory);
+
             }
+
+
         });
+        // Category Change
+
+        document
+            .getElementById("category")
+            .addEventListener("change", function () {
+
+
+                selectedSubCategory = "";
+
+
+                selectedExtraSubCategory = "";
+
+
+                loadSubCategories(this.value);
+
+
+            });
+
+        // Sub Category Change
+
+        document
+            .getElementById("subCategory")
+            .addEventListener("change", function () {
+
+
+                loadExtraSubCategories(this.value);
+
+
+            });
     </script>

@@ -24,13 +24,20 @@
 
                                     <div class="mb-3">
                                         <label class="font-weight-500 text-secondary small">Parent Category</label>
-                                        <select name="category" class="form-control custom-input" required>
+                                        <select name="category" class="form-control" required>
+
                                             <option value="">Select Category</option>
-                                            <% categories.forEach(cat=> { %>
-                                                <option value="<%= cat._id %>">
-                                                    <%= cat.name %>
+
+                                            <% categories.forEach(category=> { %>
+
+                                                <option value="<%= category._id %>">
+
+                                                    <%= category.name %>
+
                                                 </option>
+
                                                 <% }) %>
+
                                         </select>
                                     </div>
 
@@ -114,7 +121,8 @@
             background-color: #1e1e2f;
             color: white;
         }
-        ::placeholder{
+
+        ::placeholder {
             /* background-color:transparent; */
             color: rgba(209, 209, 209, 0.143) !important;
         }

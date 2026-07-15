@@ -9,89 +9,85 @@ if (!fs.existsSync(uploadPath)) {
     fs.mkdirSync(uploadPath, { recursive: true });
 }
 
+exports.addUser = (req, res) => {
 
+    res.render("add");
 
-
-exports.addUser = async (req, res) => {
-    try {
-        const currentUser = await User.findById(req.user._id);
-
-        if (!currentUser) {
-            return res.redirect("/login");
-        }
-
-        res.render("add", {
-            user: currentUser   
-        });
-
-    } catch (err) {
-        console.log(err);
-        res.redirect("/login");
-    }
 };
 
-
 exports.insertUser = async (req, res) => {
-
     try {
 
-        const user = await User.findById(req.user._id);
-
-        if (!user) {
-
-            req.flash("error", "User not found.");
-            return res.redirect("/login");
-
+        // Permission Check
+        if (!permission.canCreateUser(req.user.role, req.body.role)) {
+            req.flash("error", "Access Denied.");
+            return res.redirect("/users");
         }
 
-        // Update Profile
-        user.firstName = req.body.firstName || user.firstName;
-        user.lastName = req.body.lastName || user.lastName;
-        user.mobile = req.body.mobile || user.mobile;
-        user.gender = req.body.gender || user.gender;
-        user.dob = req.body.dob || user.dob;
-        user.age = req.body.age || user.age;
-        user.address = req.body.address || user.address;
-        user.city = req.body.city || user.city;
-        user.state = req.body.state || user.state;
-        user.pincode = req.body.pincode || user.pincode;
-        user.education = req.body.education || user.education;
-        user.occupation = req.body.occupation || user.occupation;
-        user.joiningDate = req.body.joiningDate || user.joiningDate;
-        user.status = req.body.status || user.status;
+        // Get Form Data
+        const username = (req.body.username || "").trim();
+        const email = (req.body.email || "").trim().toLowerCase();
 
-        user.hobbies = req.body.hobbies
-            ? req.body.hobbies.split(",").map(h => h.trim())
-            : user.hobbies;
+        // Check Username
+        const usernameExists = await User.findOne({ username });
 
-        // Update Image
+        if (usernameExists) {
+            req.flash("error", "Username already exists.");
+            return res.redirect("/users");
+        }
+
+        // Check Email
+        const emailExists = await User.findOne({ email });
+
+        if (emailExists) {
+            req.flash("error", "Email already exists.");
+            return res.redirect("/users");
+        }
+
+        // Hash Password
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+        // Upload Image
+        let image = "default.png";
+
         if (req.file) {
-
-            if (user.image && user.image !== "default.png") {
-
-                const imagePath = path.join(
-                    __dirname,
-                    "../uploads/users",
-                    user.image
-                );
-
-                if (fs.existsSync(imagePath)) {
-
-                    fs.unlinkSync(imagePath);
-
-                }
-
-            }
-
-            user.image = req.file.filename;
-
+            image = req.file.filename;
         }
 
-        await user.save();
+        // Create User
+        await User.create({
 
-        req.flash("success", "Profile updated successfully.");
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            username,
+            email,
+            password: hashedPassword,
 
-        res.redirect("/dashboard");
+            role: req.body.role,
+
+            mobile: req.body.mobile,
+            gender: req.body.gender,
+            dob: req.body.dob || null,
+            age: req.body.age || null,
+            address: req.body.address,
+            city: req.body.city,
+            state: req.body.state,
+            pincode: req.body.pincode,
+            education: req.body.education,
+            occupation: req.body.occupation,
+            joiningDate: req.body.joiningDate || Date.now(),
+            status: req.body.status || "Active",
+            image,
+
+            hobbies: req.body.hobbies
+                ? req.body.hobbies.split(",").map(h => h.trim())
+                : []
+
+        });
+
+        req.flash("success", "User created successfully.");
+
+        return res.redirect("/users");
 
     } catch (err) {
 
@@ -99,10 +95,9 @@ exports.insertUser = async (req, res) => {
 
         req.flash("error", "Something went wrong.");
 
-        res.redirect("back");
+        return res.redirect("/users");
 
     }
-
 };
 
 
@@ -130,48 +125,83 @@ exports.viewUsers = async (req, res) => {
     }
 };
 
-
 // SINGLE USER
 
 exports.getSingleUser = async (req, res) => {
+
     try {
 
         const user = await User.findById(req.params.id);
 
         if (!user) {
+
             req.flash("error", "User not found.");
 
-            return res.redirect("/login");
+            return res.redirect("/users");
+
+        }
+
+        // Permission Check
+        if (!permission.canEditUser(req.user.role, user.role)) {
+
+            req.flash("error", "Access Denied");
+
+            return res.redirect("/users");
+
         }
 
         res.render("view", { user });
 
     } catch (err) {
-        console.log(err);
-        res.status(500).send("Server Error");
-    }
-};
 
+        console.log(err);
+
+        req.flash("error", "Something went wrong.");
+
+        return res.redirect("/users");
+
+    }
+
+};
 
 // EDIT USER PAGE
 
 exports.editUser = async (req, res) => {
+
     try {
 
         const user = await User.findById(req.params.id);
 
         if (!user) {
+
+            req.flash("error", "User not found.");
+
             return res.redirect("/users");
+
+        }
+
+        // Permission Check
+        if (!permission.canEditUser(req.user.role, user.role)) {
+
+            req.flash("error", "Access Denied");
+
+            return res.redirect("/users");
+
         }
 
         res.render("edit", { user });
 
     } catch (err) {
-        console.log(err);
-        res.redirect("/users");
-    }
-};
 
+        console.log(err);
+
+        req.flash("error", "Something went wrong.");
+
+        return res.redirect("/users");
+
+    }
+
+};
 
 // UPDATE USER
 
@@ -184,72 +214,92 @@ exports.updateUser = async (req, res) => {
         if (!user) {
 
             req.flash("error", "User not found.");
+
             return res.redirect("/users");
 
         }
 
+        // Permission Check
+        if (!permission.canEditUser(req.user.role, user.role)) {
 
-        // Check duplicate username
-        const existingUsername = await User.findOne({
-            username: req.body.username.trim(),
-            _id: { $ne: req.params.id }
+            req.flash("error", "Access Denied");
+
+            return res.redirect("/users");
+
+        }
+
+        const username = (req.body.username || "").trim();
+        const email = (req.body.email || "").trim().toLowerCase();
+
+        // Duplicate Username
+        const usernameExists = await User.findOne({
+            username,
+            _id: { $ne: user._id }
         });
 
-        if (existingUsername) {
+        if (usernameExists) {
 
             req.flash("error", "Username already exists.");
-            return res.redirect("back");
+
+            return res.redirect("/users");
 
         }
 
-
-        // Check duplicate email
-        const existingEmail = await User.findOne({
-            email: req.body.email.trim().toLowerCase(),
-            _id: { $ne: req.params.id }
+        // Duplicate Email
+        const emailExists = await User.findOne({
+            email,
+            _id: { $ne: user._id }
         });
 
-        if (existingEmail) {
+        if (emailExists) {
 
             req.flash("error", "Email already exists.");
-            return res.redirect("back");
+
+            return res.redirect("/users");
 
         }
 
+        // Update Fields
 
-        // Update fields
-        user.firstName = req.body.firstName || user.firstName;
-        user.lastName = req.body.lastName || user.lastName;
-        user.username = req.body.username || user.username;
-        user.email = req.body.email || user.email;
-        user.mobile = req.body.mobile || user.mobile;
-        user.gender = req.body.gender || user.gender;
-        user.dob = req.body.dob || user.dob;
-        user.age = req.body.age || user.age;
-        user.address = req.body.address || user.address;
-        user.city = req.body.city || user.city;
-        user.state = req.body.state || user.state;
-        user.pincode = req.body.pincode || user.pincode;
-        user.education = req.body.education || user.education;
-        user.occupation = req.body.occupation || user.occupation;
-        user.joiningDate = req.body.joiningDate || user.joiningDate;
-        user.status = req.body.status || user.status;
+        user.firstName = req.body.firstName;
+        user.lastName = req.body.lastName;
+        user.username = username;
+        user.email = email;
+        user.mobile = req.body.mobile;
+        user.gender = req.body.gender;
+        user.dob = req.body.dob;
+        user.age = req.body.age;
+        user.address = req.body.address;
+        user.city = req.body.city;
+        user.state = req.body.state;
+        user.pincode = req.body.pincode;
+        user.education = req.body.education;
+        user.occupation = req.body.occupation;
+        user.joiningDate = req.body.joiningDate;
+        user.status = req.body.status;
 
-        // Only Super Admin can change role
-        if (req.user.role === "Super Admin") {
-            user.role = req.body.role || user.role;
+        // Change Role (only if allowed)
+
+        if (permission.canCreateUser(req.user.role, req.body.role)) {
+
+            user.role = req.body.role;
+
         }
 
         // Hobbies
+
         user.hobbies = req.body.hobbies
             ? req.body.hobbies.split(",").map(h => h.trim())
-            : user.hobbies;
+            : [];
 
+        // Image Upload
 
-        // Update Image
         if (req.file) {
 
-            if (user.image && user.image !== "default.png") {
+            if (
+                user.image &&
+                user.image !== "default.png"
+            ) {
 
                 const imagePath = path.join(
                     __dirname,
@@ -269,12 +319,11 @@ exports.updateUser = async (req, res) => {
 
         }
 
-
         await user.save();
 
         req.flash("success", "User updated successfully.");
 
-        res.redirect("/users");
+        return res.redirect("/users");
 
     } catch (err) {
 
@@ -282,7 +331,7 @@ exports.updateUser = async (req, res) => {
 
         req.flash("error", "Something went wrong.");
 
-        res.redirect("back");
+        return res.redirect("/users");
 
     }
 
@@ -291,15 +340,34 @@ exports.updateUser = async (req, res) => {
 // DELETE USER
 
 exports.deleteUser = async (req, res) => {
+
     try {
 
         const user = await User.findById(req.params.id);
 
         if (!user) {
+
+            req.flash("error", "User not found.");
+
             return res.redirect("/users");
+
         }
 
-        if (user.image && user.image !== "default.png") {
+        // Permission Check
+        if (!permission.canDeleteUser(req.user.role, user.role)) {
+
+            req.flash("error", "Access Denied");
+
+            return res.redirect("/users");
+
+        }
+
+        // Delete Profile Image
+
+        if (
+            user.image &&
+            user.image !== "default.png"
+        ) {
 
             const imagePath = path.join(
                 __dirname,
@@ -308,16 +376,27 @@ exports.deleteUser = async (req, res) => {
             );
 
             if (fs.existsSync(imagePath)) {
+
                 fs.unlinkSync(imagePath);
+
             }
+
         }
 
-        await User.findByIdAndDelete(req.params.id);
+        await User.findByIdAndDelete(user._id);
 
-        res.redirect("/users");
+        req.flash("success", "User deleted successfully.");
+
+        return res.redirect("/users");
 
     } catch (err) {
+
         console.log(err);
-        res.status(500).send(err.message);
+
+        req.flash("error", "Something went wrong.");
+
+        return res.redirect("/users");
+
     }
+
 };

@@ -1,13 +1,115 @@
 const Category = require("../models/Category");
 const SubCategory = require("../models/SubCategory");
+const fs = require("fs");
+const path = require("path");
+
+// Add Page
+
+exports.addSubCategoryPage = async (req, res) => {
+    try {
+
+        const categories = await Category.find({
+            status: "Active"
+        }).sort({ name: 1 });
+
+        res.render("subcategory/add", {
+            categories
+        });
+
+    } catch (err) {
+
+        console.log(err);
+
+        req.flash("error", "Unable to load categories.");
+
+        return res.redirect("/subcategory");
+
+    }
+};
+
+// Insert
+
+exports.insertSubCategory = async (req, res) => {
+    try {
+
+        const { category, name, description, status } = req.body;
+
+        // Check if category exists
+        const categoryExists = await Category.findById(category);
+
+        if (!categoryExists) {
+
+            req.flash("error", "Invalid Category.");
+
+            return res.redirect("/subcategory/add");
+
+        }
+
+        // Check duplicate subcategory in same category
+        const subCategoryExists = await SubCategory.findOne({
+
+            category: category,
+
+            name: name.trim()
+
+        });
+
+        if (subCategoryExists) {
+
+            req.flash("error", "Sub Category already exists.");
+
+            return res.redirect("/subcategory/add");
+
+        }
+
+        // Image
+        let image = "";
+
+        if (req.file) {
+
+            image = "subcategory/" + req.file.filename;
+
+        }
+
+        // Create Sub Category
+        await SubCategory.create({
+
+            category,
+
+            name: name.trim(),
+
+            description,
+
+            status,
+
+            image
+
+        });
+
+        req.flash("success", "Sub Category added successfully.");
+
+        return res.redirect("/subcategory");
+
+    } catch (err) {
+
+        console.log(err);
+
+        req.flash("error", "Unable to add Sub Category.");
+
+        return res.redirect("/subcategory/add");
+
+    }
+};
 
 // View :
 
-exports.viewPage = async (req, res) => {
-
+exports.viewSubCategoryPage = async (req, res) => {
     try {
 
-        const search = req.query.search ? req.query.search.trim() : "";
+        const search = req.query.search
+            ? req.query.search.trim()
+            : "";
+
         const status = req.query.status || "";
 
         const page = parseInt(req.query.page) || 1;
@@ -16,6 +118,7 @@ exports.viewPage = async (req, res) => {
 
         let query = {};
 
+        // Search
         if (search) {
 
             query.name = {
@@ -25,6 +128,7 @@ exports.viewPage = async (req, res) => {
 
         }
 
+        // Status Filter
         if (status) {
 
             query.status = status;
@@ -36,12 +140,16 @@ exports.viewPage = async (req, res) => {
         const totalPages = Math.ceil(total / limit);
 
         const subCategories = await SubCategory.find(query)
+
             .populate("category")
+
             .sort({ createdAt: -1 })
+
             .skip(skip)
+
             .limit(limit);
 
-        res.render("subCategory/table", {
+        res.render("subcategory/table", {
 
             subCategories,
 
@@ -55,75 +163,23 @@ exports.viewPage = async (req, res) => {
 
         });
 
-    }
-
-    catch (err) {
-
-        console.log(err);
-
-        res.redirect("/dashboard");
-
-    }
-
-};
-
-// Add Page
-exports.addPage = async (req, res) => {
-
-    const categories = await Category.find({
-        status: "Active"
-    });
-
-    res.render("subCategory/add", {
-        categories
-    });
-
-};
-
-// Insert
-exports.insertSubCategory = async (req, res) => {
-
-    try {
-
-        await SubCategory.create({
-
-            category: req.body.category,
-
-            name: req.body.name,
-
-            description: req.body.description,
-
-            status: req.body.status,
-
-            image: req.file
-                ? "subCategory/" + req.file.filename
-                : ""
-
-        });
-
-        req.flash("success", "Sub Category Added Successfully.");
-
-        res.redirect("/subcategory");
-
     } catch (err) {
 
         console.log(err);
 
-        req.flash("error", "Unable to add Sub Category.");
+        req.flash("error", "Unable to load Sub Categories.");
 
-        res.redirect("/subcategory/add");
+        return res.redirect("/dashboard");
 
     }
 };
 
 // Edit :
 
-exports.editPage = async (req, res) => {
-
+exports.editSubCategoryPage = async (req, res) => {
     try {
 
-        const categories = await Category.find();
-
+        // Find Sub Category
         const subCategory = await SubCategory.findById(req.params.id);
 
         if (!subCategory) {
@@ -134,12 +190,14 @@ exports.editPage = async (req, res) => {
 
         }
 
-        res.render("subCategory/edit", {
+        // Load Active Categories
+        const categories = await Category.find({
+            status: "Active"
+        }).sort({ name: 1 });
 
-            categories,
-
-            subCategory
-
+        res.render("subcategory/edit", {
+            subCategory,
+            categories
         });
 
     } catch (err) {
@@ -148,15 +206,14 @@ exports.editPage = async (req, res) => {
 
         req.flash("error", "Something went wrong.");
 
-        res.redirect("/subcategory");
+        return res.redirect("/subcategory");
 
     }
-
 };
+
 // Update :
 
 exports.updateSubCategory = async (req, res) => {
-
     try {
 
         const subCategory = await SubCategory.findById(req.params.id);
@@ -169,57 +226,97 @@ exports.updateSubCategory = async (req, res) => {
 
         }
 
+        // Check Duplicate Name
+        const exists = await SubCategory.findOne({
+            name: req.body.name.trim(),
+            _id: { $ne: req.params.id }
+        });
+
+        if (exists) {
+
+            req.flash("error", "Sub Category already exists.");
+
+            return res.redirect("/subcategory");
+
+        }
+
+        // Update Fields
+        subCategory.name = req.body.name.trim();
         subCategory.category = req.body.category;
-        subCategory.name = req.body.name;
         subCategory.description = req.body.description;
         subCategory.status = req.body.status;
 
+        // Update Image
         if (req.file) {
 
-            subCategory.image = "subCategory/" + req.file.filename;
+            // Delete Old Image
+            if (subCategory.image) {
+
+                const imagePath = path.join(
+                    __dirname,
+                    "../uploads",
+                    subCategory.image
+                );
+
+                if (fs.existsSync(imagePath)) {
+
+                    fs.unlinkSync(imagePath);
+
+                }
+
+            }
+
+            subCategory.image = "subcategory/" + req.file.filename;
 
         }
 
         await subCategory.save();
 
-        req.flash("success", "Sub Category Updated.");
+        req.flash("success", "Sub Category updated successfully.");
 
-        res.redirect("/subcategory");
+        return res.redirect("/subcategory");
 
     } catch (err) {
 
         console.log(err);
 
-        req.flash("error", "Unable to update.");
+        req.flash("error", "Unable to update Sub Category.");
 
-        res.redirect("/subcategory");
+        return res.redirect("/subcategory");
 
     }
-
 };
 
 // Delete :
 
 exports.deleteSubCategory = async (req, res) => {
-
     try {
+
+        const subCategory = await SubCategory.findById(req.params.id);
+
+        if (!subCategory) {
+
+            req.flash("error", "Sub Category not found.");
+
+            return res.redirect("/subcategory");
+
+        }
 
         await SubCategory.findByIdAndDelete(req.params.id);
 
-        req.flash("success", "Sub Category Deleted.");
+        req.flash("success", "Sub Category deleted successfully.");
 
-        res.redirect("/subcategory");
+        return res.redirect("/subcategory");
 
     } catch (err) {
 
         console.log(err);
 
-        req.flash("error", "Unable to delete.");
+        req.flash("error", "Unable to delete Sub Category.");
 
-        res.redirect("/subcategory");
+        return res.redirect("/subcategory");
 
     }
-
 };
 
 // Status :

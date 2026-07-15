@@ -28,7 +28,7 @@
 
                         <div class="card-body p-4" style="max-width:750px;">
 
-                           <form action="/product/add" method="POST" enctype="multipart/form-data">
+                            <form action="/product/add" method="POST" enctype="multipart/form-data">
 
                                 <!-- Category -->
 
@@ -188,20 +188,42 @@
 
                                 </div>
 
-                                <!-- Image -->
+                            <!-- Thumbnail Image -->
+                            
+                            <div class="mb-3">
+                            
+                                <label class="text-secondary">
+                                    Product Thumbnail
+                                </label>
+                            
+                            <input type="file" name="thumbnail" class="form-control">
+                            
+                            </div>
+                            
+                            
+                            <!-- Gallery Images -->
+                            
+                            <div class="mb-3">
+                            
+                                <label class="text-secondary">
+                                    Product Gallery Images
+                                </label>
+                            
+                                <input type="file" name="gallery" class="form-control" multiple>
+                            
+                            </div>
 
-                                <div class="mb-3">
-
-                                    <label class="text-secondary">
-
-                                        Product Image
-
-                                    </label>
-
-                                    <input type="file" name="image" class="form-control">
-
-                                </div>
-
+                            <!-- SKU -->
+                            
+                            <div class="mb-3">
+                            
+                                <label class="text-dark">
+                                    SKU
+                                </label>
+                            
+                                <input type="text" name="sku" class="form-control custom-input" required>
+                            
+                            </div>
                                 <!-- Status -->
 
                                 <div class="mb-4">
@@ -259,7 +281,7 @@
             padding: 30px;
             transition: all 0.3s ease-in-out;
         }
-    
+
         .custom-input {
             background-color: #1e1e2f !important;
             border: 1px solid #5c5780 !important;
@@ -269,86 +291,143 @@
             color: white !important;
             transition: all 0.2s ease-in-out !important;
         }
-    
+
         .custom-input:focus {
             background-color: #1e1e2f !important;
             border-color: #6c5dd3 !important;
             box-shadow: 0 0 0 3px rgba(108, 93, 211, 0.15) !important;
         }
-    
+
         .font-weight-500 {
             font-weight: 500;
         }
-    
+
         select.custom-input option {
             background-color: #1e1e2f;
             color: white;
         }
-    
+
         ::placeholder {
             /* background-color:transparent; */
             color: rgba(209, 209, 209, 0.143) !important;
         }
     </style>
+
     <script>
 
-        const category = document.getElementById("category");
-        const subCategory = document.getElementById("subCategory");
-        const extraSubCategory = document.getElementById("extraSubCategory");
 
-        // Load Sub Categories
-        category.addEventListener("change", async function () {
+        // Category Change
 
-            const id = this.value;
+        document.getElementById("category")
+            .addEventListener("change", function () {
 
-            subCategory.innerHTML =
-                '<option value="">Select Sub Category</option>';
 
-            extraSubCategory.innerHTML =
-                '<option value="">Select Extra Sub Category</option>';
+                let categoryId = this.value;
 
-            if (!id) return;
 
-            const res = await fetch("/product/get-subcategory/" + id);
+                let subCategory =
+                    document.getElementById("subCategory");
 
-            const data = await res.json();
 
-            data.forEach(item => {
+                let extraSubCategory =
+                    document.getElementById("extraSubCategory");
 
-                subCategory.innerHTML += `
-                <option value="${item._id}">
-                    ${item.name}
+
+                subCategory.innerHTML =
+                    `<option value="">Select Sub Category</option>`;
+
+
+                extraSubCategory.innerHTML =
+                    `<option value="">Select Extra Sub Category</option>`;
+
+
+
+                if (categoryId) {
+
+
+                    fetch("/product/get-subcategories/" + categoryId)
+
+                        .then(res => res.json())
+
+                        .then(data => {
+
+
+                            data.forEach(sub => {
+
+
+                                subCategory.innerHTML +=
+                                    `
+                <option value="${sub._id}">
+                    ${sub.name}
                 </option>
-            `;
+                `;
+
+
+                            });
+
+
+                        });
+
+
+                }
+
 
             });
 
-        });
 
-        // Load Extra Sub Categories
-        subCategory.addEventListener("change", async function () {
 
-            const id = this.value;
 
-            extraSubCategory.innerHTML =
-                '<option value="">Select Extra Sub Category</option>';
 
-            if (!id) return;
+        // Sub Category Change
 
-            const res = await fetch("/product/get-extrasubcategory/" + id);
 
-            const data = await res.json();
+        document.getElementById("subCategory")
+            .addEventListener("change", function () {
 
-            data.forEach(item => {
 
-                extraSubCategory.innerHTML += `
-                <option value="${item._id}">
-                    ${item.name}
+                let subCategoryId = this.value;
+
+
+                let extraSubCategory =
+                    document.getElementById("extraSubCategory");
+
+
+
+                extraSubCategory.innerHTML =
+                    `<option value="">Select Extra Sub Category</option>`;
+
+
+
+                if (subCategoryId) {
+
+
+                    fetch("/product/get-extrasubcategories/" + subCategoryId)
+
+                        .then(res => res.json())
+
+                        .then(data => {
+
+
+                            data.forEach(extra => {
+
+
+                                extraSubCategory.innerHTML +=
+                                    `
+                <option value="${extra._id}">
+                    ${extra.name}
                 </option>
-            `;
+                `;
+
+
+                            });
+
+
+                        });
+
+
+                }
+
 
             });
-
-        });
 
     </script>

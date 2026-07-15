@@ -1,4 +1,7 @@
 const Category = require("../models/Category");
+const permission = require("../middleware/categoryPermission");
+const fs = require("fs");
+const path = require("path");
 
 exports.addCategoryPage = (req, res) => {
 
@@ -60,14 +63,30 @@ exports.viewCategoryPage = async (req, res) => {
 // Add :
 
 exports.insertCategory = async (req, res) => {
-    console.log("Insert Category Called");
     try {
 
-        const exists = await Category.findOne({
+        // Permission Check
+        if (!permission.canCreateCategory(req.user.role)) {
 
-            name: req.body.name.trim()
+            req.flash("error", "Access Denied.");
 
-        });
+            return res.redirect("/category");
+
+        }
+
+        // Clean Input
+        const name = (req.body.name || "").trim();
+
+        if (!name) {
+
+            req.flash("error", "Category name is required.");
+
+            return res.redirect("/category/add");
+
+        }
+
+        // Check Duplicate
+        const exists = await Category.findOne({ name });
 
         if (exists) {
 
@@ -77,13 +96,14 @@ exports.insertCategory = async (req, res) => {
 
         }
 
+        // Create Category
         await Category.create({
 
-            name: req.body.name,
+            name,
 
             description: req.body.description,
 
-            status: req.body.status,
+            status: req.body.status || "Active",
 
             image: req.file
                 ? "category/" + req.file.filename
@@ -93,28 +113,38 @@ exports.insertCategory = async (req, res) => {
 
         req.flash("success", "Category Added Successfully.");
 
-        res.redirect("/category");
+        return res.redirect("/category");
 
-    }
-
-    catch (err) {
+    } catch (err) {
 
         console.log(err);
 
         req.flash("error", "Unable to add category.");
 
-        res.redirect("/category/add");
+        return res.redirect("/category/add");
 
     }
-
 };
+
 // Edit :
+
 exports.editCategoryPage = async (req, res) => {
-    console.log("EDIT PAGE OPENED");
-    console.log(req.params.id);
+
     try {
 
-        const category = await Category.findById(req.params.id);
+        const { id } = req.params;
+
+        // Check ID
+        if (!id) {
+
+            req.flash("error", "Invalid Category ID.");
+
+            return res.redirect("/category");
+
+        }
+
+        // Find Category
+        const category = await Category.findById(id);
 
         if (!category) {
 
@@ -124,7 +154,10 @@ exports.editCategoryPage = async (req, res) => {
 
         }
 
-        res.render("category/edit", { category });
+        // Render Edit Page
+        res.render("category/edit", {
+            category
+        });
 
     } catch (err) {
 
@@ -132,18 +165,21 @@ exports.editCategoryPage = async (req, res) => {
 
         req.flash("error", "Something went wrong.");
 
-        res.redirect("/category");
+        return res.redirect("/category");
 
     }
 
 };
+
 // Update :
 
 exports.updateCategory = async (req, res) => {
 
     try {
 
-        const category = await Category.findById(req.params.id);
+        const { id } = req.params;
+
+        const category = await Category.findById(id);
 
         if (!category) {
 
@@ -153,11 +189,46 @@ exports.updateCategory = async (req, res) => {
 
         }
 
-        category.name = req.body.name;
+        const name = (req.body.name || "").trim();
+
+        // Duplicate Name Check
+        const exists = await Category.findOne({
+            name,
+            _id: { $ne: id }
+        });
+
+        if (exists) {
+
+            req.flash("error", "Category already exists.");
+
+            return res.redirect("/category");
+
+        }
+
+        // Update Fields
+        category.name = name;
         category.description = req.body.description;
         category.status = req.body.status;
 
+        // Update Image
         if (req.file) {
+
+            // Delete Old Image
+            if (category.image) {
+
+                const oldImage = path.join(
+                    __dirname,
+                    "../uploads",
+                    category.image
+                );
+
+                if (fs.existsSync(oldImage)) {
+
+                    fs.unlinkSync(oldImage);
+
+                }
+
+            }
 
             category.image = "category/" + req.file.filename;
 
@@ -167,7 +238,7 @@ exports.updateCategory = async (req, res) => {
 
         req.flash("success", "Category updated successfully.");
 
-        res.redirect("/category");
+        return res.redirect("/category");
 
     } catch (err) {
 
@@ -175,14 +246,15 @@ exports.updateCategory = async (req, res) => {
 
         req.flash("error", "Unable to update category.");
 
-        res.redirect("/category");
+        return res.redirect("/category");
 
     }
 
 };
-// Delete :
-exports.deleteCategory = async (req, res) => {
 
+// Delete :
+
+exports.deleteCategory = async (req, res) => {
     try {
 
         const category = await Category.findById(req.params.id);
@@ -195,11 +267,28 @@ exports.deleteCategory = async (req, res) => {
 
         }
 
+        // Delete Image
+        if (category.image) {
+
+            const imagePath = path.join(
+                __dirname,
+                "../uploads",
+                category.image
+            );
+
+            if (fs.existsSync(imagePath)) {
+
+                fs.unlinkSync(imagePath);
+
+            }
+
+        }
+
         await Category.findByIdAndDelete(req.params.id);
 
         req.flash("success", "Category deleted successfully.");
 
-        res.redirect("/category");
+        return res.redirect("/category");
 
     } catch (err) {
 
@@ -207,10 +296,9 @@ exports.deleteCategory = async (req, res) => {
 
         req.flash("error", "Unable to delete category.");
 
-        res.redirect("/category");
+        return res.redirect("/category");
 
     }
-
 };
 // Status :
 

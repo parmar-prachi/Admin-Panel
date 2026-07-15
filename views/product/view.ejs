@@ -1,0 +1,243 @@
+<%- include('../header') %>
+
+    <div class="d-flex w-100" style="min-height: 100vh; background-color: #1e1e2f;">
+
+        <%- include('../sidebar') %>
+
+            <div class="main-content-wrapper flex-grow-1" id="mainContent">
+
+                <%- include('../navbar') %>
+
+                    <div class="container-fluid py-4">
+
+                        <!-- Header Area -->
+                        <div class="d-flex align-items-center justify-content-between border-0 pt-4 px-4 mb-4">
+                            <div>
+                                <h4 class="font-weight-bold text-white mb-2">
+                                    <span style="color: #6c5dd3; margin-right: 8px;">📦</span> Product Details
+                                </h4>
+                                <p class="text-white small mb-0">
+                                    In-depth catalog overview, metadata configurations, and inventory states.
+                                </p>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="/product" class="btn btn-light px-4"
+                                    style="border-radius: 10px; font-weight: 500;">
+                                    ⬅️ Back to List
+                                </a>
+                                <a href="/product/edit/<%= product._id %>" class="btn text-white px-4"
+                                    style="background-color: #6c5dd3; border-radius: 10px; font-weight: 500;">
+                                    ✏️ Edit Product
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Card Details Panel -->
+                        <div class="px-4">
+                            <div class="card p-4 border-0 shadow-sm"
+                                style="background-color: #1a1a26; border-radius: 16px;">
+                                <div class="row g-4">
+
+                                    <!-- Media Display Block -->
+                                    <div class="col-md-4">
+                                        <div class="product-media-frame">
+                                            <% if(product.thumbnail){ %>
+                                                <img src="/uploads/<%= product.thumbnail %>" alt="<%= product.name %>"
+                                                    class="img-fluid rounded w-100 product-img-preview">
+                                                <% } else { %>
+                                                    <div class="product-img-placeholder">
+                                                        <span style="font-size: 3rem; opacity: 0.5;">📦</span>
+                                                        <small class="text-secondary mt-2">No Thumbnail
+                                                            Available</small>
+                                                    </div>
+                                                    <% } %>
+                                        </div>
+                                    </div>
+
+                                    <!-- Technical Properties Grid -->
+                                    <div class="col-md-8">
+                                        <div class="ps-md-2">
+                                            <h2 class="text-white font-weight-bold mb-3">
+                                                <%= product.name %>
+                                            </h2>
+
+                                            <div class="row row-cols-1 row-cols-sm-2 g-3 mt-1">
+
+                                                <!-- Brand Info -->
+                                                <div class="col py-2 border-bottom-item d-flex align-items-center">
+                                                    <span class="text-secondary small d-block"
+                                                        style="min-width: 150px;">🏷️ Brand:</span>
+                                                    <strong class="text-white">
+                                                        <%= product.brand || "-" %>
+                                                    </strong>
+                                                </div>
+
+                                                <!-- Current Status -->
+                                                <div class="col py-2 border-bottom-item d-flex align-items-center">
+                                                    <span class="text-secondary small d-block"
+                                                        style="min-width: 150px;">🛡️ Status:</span>
+                                                    <span
+                                                        class="badge px-3 py-1 rounded-pill <%= product.status === 'Active' ? 'badge-active' : 'badge-inactive' %>">
+                                                        <%= product.status || 'Active' %>
+                                                    </span>
+                                                </div>
+
+                                                <!-- Parent Category -->
+                                                <div class="col py-2 border-bottom-item d-flex align-items-center">
+                                                    <span class="text-secondary small d-block"
+                                                        style="min-width: 150px;">📁 Parent Category:</span>
+                                                    <strong class="text-white">
+                                                        <%= product.category ? product.category.name : "-" %>
+                                                    </strong>
+                                                </div>
+
+                                                <!-- Sub Category -->
+                                                <div class="col py-2 border-bottom-item d-flex align-items-center">
+                                                    <span class="text-secondary small d-block"
+                                                        style="min-width: 150px;">📂 Sub Category:</span>
+                                                    <strong class="text-white">
+                                                        <%= product.subCategory ? product.subCategory.name : "-" %>
+                                                    </strong>
+                                                </div>
+
+                                                <!-- Extra Sub Category -->
+                                                <div class="col py-2 border-bottom-item d-flex align-items-center">
+                                                    <span class="text-secondary small d-block"
+                                                        style="min-width: 150px;">✨ Extra Sub Category:</span>
+                                                    <strong style="color: #6c5dd3;">
+                                                        <%= product.extraSubCategory ? product.extraSubCategory.name
+                                                            : "-" %>
+                                                    </strong>
+                                                </div>
+
+                                                <!-- Quantity Count -->
+                                                <div class="col py-2 border-bottom-item d-flex align-items-center">
+                                                    <span class="text-secondary small d-block"
+                                                        style="min-width: 150px;">📊 Stock Quantity:</span>
+                                                    <span class="badge px-2 py-1 rounded text-white"
+                                                        style="background-color: #2a2a40; border: 1px solid #3d3d5c;">
+                                                        <%= product.quantity %> Items
+                                                    </span>
+                                                </div>
+
+                                            </div>
+
+                                            <!-- Pricing Metrics Group -->
+                                            <div class="d-flex flex-wrap align-items-center gap-4 mt-4 p-3 rounded"
+                                                style="background-color: #222235; border: 1px solid #2d3238;">
+                                                <div>
+                                                    <span class="text-secondary small d-block mb-1">Standard Cost
+                                                        Price</span>
+                                                    <h4 class="text-white mb-0 font-weight-bold opacity-75"
+                                                        style="text-decoration: line-through;">₹<%= product.price %>
+                                                    </h4>
+                                                </div>
+                                                <div class="border-right-divider"></div>
+                                                <div>
+                                                    <span class="text-white small d-block mb-1">Interactive Sale
+                                                        Value</span>
+                                                    <h3 class="mb-0 font-weight-bold" style="color: #00c853;">₹
+                                                        <%=product.salePrice %>
+                                                    </h3>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr class="my-4" style="border-top: 1px solid #252538;">
+
+                                <!-- Product Description block -->
+                                <div class="mt-2">
+                                    <h5 class="text-white font-weight-bold mb-3 d-flex align-items-center gap-2">
+                                        📄 Product Description
+                                    </h5>
+                                    <div class="p-3 rounded text-secondary"
+                                        style="background-color: #1f1f2e; border: 1px solid #2d3238; line-height: 1.6; font-size: 0.95rem;">
+                                        <%= product.description
+                                            || "No description catalog properties configured for this node." %>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+            </div>
+    </div>
+
+    <style>
+        .main-content-wrapper {
+            margin-left: 260px;
+            min-height: 100vh;
+            padding: 30px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Image Display Framer Rulesets */
+        .product-media-frame {
+            border: 1px solid #2d3238;
+            padding: 10px;
+            background-color: #222235;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .product-img-preview {
+            max-height: 350px;
+            object-fit: cover;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .product-img-preview:hover {
+            transform: scale(1.02);
+        }
+
+        .product-img-placeholder {
+            height: 280px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #1f1f2e;
+            border-radius: 8px;
+        }
+
+        /* Property list grid separators */
+        .border-bottom-item {
+            border-bottom: 1px solid #222235;
+        }
+
+        .border-right-divider {
+            width: 1px;
+            height: 40px;
+            background-color: #3a3a52;
+        }
+
+        /* Custom Status Badge Indicators */
+        .badge-active {
+            background-color: rgba(40, 167, 69, 0.12) !important;
+            color: #28a745 !important;
+            font-weight: 500;
+        }
+
+        .badge-inactive {
+            background-color: rgba(220, 53, 69, 0.12) !important;
+            color: #ff5c75 !important;
+            font-weight: 500;
+        }
+
+        /* Responsive adaptations */
+        @media(max-width: 992px) {
+            .main-content-wrapper {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .border-right-divider {
+                display: none;
+            }
+        }
+    </style>

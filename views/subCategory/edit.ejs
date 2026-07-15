@@ -24,19 +24,26 @@
 
                             <form action="/subcategory/update/<%= subCategory._id %>" method="POST" enctype="multipart/form-data">
 
-                                <select name="category" class="form-control">
-                                
-                                    <% categories.forEach(cat=>{ %>
-                                
-                                        <option value="<%= cat._id %>" <%=String(cat._id)===String(subCategory.category) ? "selected" : "" %>>
-                                
-                                            <%= cat.name %>
-                                
+                            <div class="mb-3">
+                            
+                                <label class="form-label">Category</label>
+                            
+                                <select name="category" class="form-control" required>
+                            
+                                    <% categories.forEach(category=> { %>
+                            
+                                        <option value="<%= category._id %>" <%=String(category._id)===String(subCategory.category) ? "selected" : ""
+                                            %>>
+                            
+                                            <%= category.name %>
+                            
                                         </option>
-                                
+                            
                                         <% }) %>
-                                
+                            
                                 </select>
+                            
+                            </div>
 
                                 <!-- Sub Category Name -->
 

@@ -6,10 +6,8 @@ const sessionAuth = require("../middleware/sessionAuth");
 const roleAuth = require("../middleware/roleAuth");
 const upload = require("../config/categoryMulter");
 
-// View Categories
 router.get("/", sessionAuth, roleAuth("Super Admin", "Admin"), categoryController.viewCategoryPage);
 
-// Add Category
 router.get("/add", sessionAuth, roleAuth("Super Admin", "Admin"), categoryController.addCategoryPage);
 
 router.post(
@@ -20,7 +18,6 @@ router.post(
     categoryController.insertCategory
 );
 
-// Edit Category
 router.get(
     "/edit/:id",
     sessionAuth,
@@ -36,14 +33,13 @@ router.post(
     categoryController.updateCategory
 );
 
-// Delete Category
 router.get(
     "/delete/:id",
     sessionAuth,
-    roleAuth("Super Admin", "Admin"),
+    roleAuth("Super Admin"),
     categoryController.deleteCategory
 );
-// Status :
+
 router.get(
     "/status/:id",
     sessionAuth,

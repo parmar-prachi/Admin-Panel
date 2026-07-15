@@ -13,10 +13,10 @@
                         <div class="d-flex align-items-center justify-content-between border-0 pt-4 px-4 mb-4">
                             <div>
                                 <h4 class="font-weight-bold text-white mb-2">
-                                    <span style="color: #6c5dd3; margin-right: 8px;">📦</span> Products
+                                    <span style="color: #6c5dd3; margin-right: 8px;">📦</span> Product List
                                 </h4>
                                 <p class="text-white small mb-0">
-                                    Manage, track, and update all product listings available in your system.
+                                    Monitor your active catalog database, pricing metrics, and nested categorization.
                                 </p>
                             </div>
                             <a href="/product/add" class="btn text-white px-4 shadow-sm d-flex align-items-center"
@@ -27,18 +27,15 @@
 
                         <div class="px-4">
                             <div class="table-responsive style-table-container">
-                                <table class="table text-white mb-0">
+                                <table class="table text-white align-middle mb-0">
                                     <thead>
                                         <tr>
                                             <th scope="col"
-                                                class="border-0 small text-uppercase text-secondary font-weight-bold">ID
+                                                class="border-0 small text-uppercase text-secondary font-weight-bold">No
                                             </th>
                                             <th scope="col"
                                                 class="border-0 small text-uppercase text-secondary font-weight-bold">
                                                 Image</th>
-                                            <th scope="col"
-                                                class="border-0 small text-uppercase text-secondary font-weight-bold">
-                                                Product Name</th>
                                             <th scope="col"
                                                 class="border-0 small text-uppercase text-secondary font-weight-bold">
                                                 Category</th>
@@ -47,19 +44,13 @@
                                                 Sub Category</th>
                                             <th scope="col"
                                                 class="border-0 small text-uppercase text-secondary font-weight-bold">
-                                                Extra Category</th>
+                                                Extra Sub Category</th>
                                             <th scope="col"
                                                 class="border-0 small text-uppercase text-secondary font-weight-bold">
-                                                Brand</th>
+                                                Name</th>
                                             <th scope="col"
                                                 class="border-0 small text-uppercase text-secondary font-weight-bold">
                                                 Price</th>
-                                            <th scope="col"
-                                                class="border-0 small text-uppercase text-secondary font-weight-bold">
-                                                Sale</th>
-                                            <th scope="col"
-                                                class="border-0 small text-uppercase text-secondary font-weight-bold">
-                                                Qty</th>
                                             <th scope="col"
                                                 class="border-0 small text-uppercase text-secondary font-weight-bold">
                                                 Status</th>
@@ -72,52 +63,40 @@
                                         <% if (typeof products !=='undefined' && products.length> 0) { %>
                                             <% products.forEach((product, index)=> { %>
                                                 <tr class="align-middle border-bottom-row">
-                                                    <td>
+                                                    <td class="text-secondary small">
                                                         <%= index + 1 %>
                                                     </td>
 
                                                     <td>
-                                                        <% if (product.image) { %>
-                                                            <img src="/uploads/<%= product.image %>"
-                                                                alt="<%= product.name %>" class="category-thumbnail">
+                                                        <% if(product.thumbnail){ %>
+                                                            <img src="/uploads/<%= product.thumbnail %>"
+                                                                alt="<%= product.name %>" class="table-media-preview">
                                                             <% } else { %>
-                                                                <div class="category-thumbnail-placeholder">
-                                                                    <span>📦</span>
-                                                                </div>
+                                                                <div class="table-media-placeholder">📦</div>
                                                                 <% } %>
                                                     </td>
 
-                                                    <td class="font-weight-bold text-dark">
+                                                    <td>
+                                                        <span class="badge px-2 py-1 rounded small text-dark fs-6">
+                                                            <%= product.category?.name || "-" %>
+                                                        </span>
+                                                    </td>
+
+                                                    <td class="text-dark opacity-90 ">
+                                                        <%= product.subCategory?.name || "-" %>
+                                                    </td>
+
+                                                    <td class="small" style="color: #6c5dd3; font-weight: 500;">
+                                                        <%= product.extraSubCategory?.name || "-" %>
+                                                    </td>
+
+                                                    <td class="font-weight-bold text-dark truncate-text"
+                                                        style="max-width: 150px;">
                                                         <%= product.name %>
                                                     </td>
 
-                                                    <td class="text-secondary small">
-                                                        <%= product.category ? product.category.name : "-" %>
-                                                    </td>
-                                                    <td class="text-secondary small">
-                                                        <%= product.subCategory ? product.subCategory.name : "-" %>
-                                                    </td>
-                                                    <td class="text-secondary small">
-                                                        <%= product.extraSubCategory ? product.extraSubCategory.name
-                                                            : "-" %>
-                                                    </td>
-
-                                                    <td class="text-secondary small">
-                                                        <%= product.brand || "-" %>
-                                                    </td>
-
-                                                    <td class="font-weight-bold" style="color: #6c5dd3;">₹<%=
-                                                            product.price %>
-                                                    </td>
-
-                                                    <td class="text-secondary small">₹<%= product.salePrice || "0" %>
-                                                    </td>
-
-                                                    <td>
-                                                        <span
-                                                            class="small font-weight-500 <%= product.quantity < 5 ? 'text-danger' : 'text-white' %>">
-                                                            <%= product.quantity %>
-                                                        </span>
+                                                    <td class="font-weight-bold text-dark">
+                                                        ₹<%= product.price %>
                                                     </td>
 
                                                     <td>
@@ -128,26 +107,36 @@
                                                     </td>
 
                                                     <td class="text-right">
-                                                        <div class="d-flex justify-content-end gap-2" style="gap: 8px;">
+                                                        <div class="d-flex justify-content-end align-items-center"
+                                                            style="gap: 8px;">
+                                                            <a href="/product/view/<%= product._id %>"
+                                                                class="btn btn-sm text-white border-0 action-btn-view"
+                                                                style="background-color: #2a2a40;" title="View details">
+                                                                👁️
+                                                            </a>
                                                             <a href="/product/edit/<%= product._id %>"
-                                                                class="btn btn-sm text-white border-0 action-btn-hover"
-                                                                style="background-color: #2a2a40;">✏️</a>
-                                                    <a href="/product/delete/<%= product._id %>" 
-                                                        class="btn btn-sm text-white border-0 action-btn-hover"
-                                                        style="background-color: #2a2a40;"
-                                                        onclick="return confirm('Are you sure?')">
-                                                        🗑️
-                                                    </a>
+                                                                class="btn btn-sm text-white border-0 action-btn-edit"
+                                                                style="background-color: #2a2a40;"
+                                                                title="Edit configuration">
+                                                                ✏️
+                                                            </a>
+                                                            <a href="/product/delete/<%= product._id %>"
+                                                                class="btn btn-sm text-white border-0 action-btn-delete"
+                                                                style="background-color: #2a2a40;"
+                                                                title="Remove profile"
+                                                                onclick="return confirm('Delete Product?')">
+                                                                🗑️
+                                                            </a>
                                                         </div>
                                                     </td>
                                                 </tr>
                                                 <% }) %>
                                                     <% } else { %>
                                                         <tr>
-                                                            <td colspan="12"
+                                                            <td colspan="9"
                                                                 class="text-center py-5 text-secondary small">
-                                                                No Products Found. Click "+ Add Product" to insert your
-                                                                first item.
+                                                                No catalog products discovered in the database inventory
+                                                                directory.
                                                             </td>
                                                         </tr>
                                                         <% } %>
@@ -168,6 +157,7 @@
             transition: all 0.3s ease-in-out;
         }
 
+        /* Container & Table layout styling */
         .style-table-container {
             background-color: #1a1a26;
             border: 1px solid #2d3238;
@@ -183,24 +173,35 @@
         .table td {
             padding: 16px 20px;
             vertical-align: middle;
+            border: none;
         }
 
         .border-bottom-row {
             border-bottom: 1px solid #252538;
         }
 
-
-        .category-thumbnail {
-            width: 50px;
-            height: 50px;
-            object-fit: cover;
-            border-radius: 8px;
-            border: 1px solid #5c5780;
+        .table tbody tr:hover {
+            background-color: #252538;
+            transition: background-color 0.2s ease;
         }
 
-        .category-thumbnail-placeholder {
-            width: 50px;
-            height: 50px;
+        /* Media Thumbnail Controls */
+        .table-media-preview {
+            width: 48px;
+            height: 48px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #3a3a52;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .table-media-preview:hover {
+            transform: scale(1.1);
+        }
+
+        .table-media-placeholder {
+            width: 48px;
+            height: 48px;
             background-color: #252538;
             border: 1px dashed #5c5780;
             border-radius: 8px;
@@ -208,28 +209,53 @@
             align-items: center;
             justify-content: center;
             font-size: 1.1rem;
+            opacity: 0.65;
         }
 
+        .truncate-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Custom Status Pill Styles */
         .badge-active {
-            background-color: rgba(40, 167, 69, 0.15);
-            color: #28a745;
-        }
-
-        .badge-inactive {
-            background-color: rgba(220, 53, 69, 0.15);
-            color: #dc3545;
-        }
-
-        .action-btn-hover:hover {
-            background-color: #6c5dd3 !important;
-            transition: background 0.2s ease;
-        }
-
-        .font-weight-500 {
+            background-color: rgba(40, 167, 69, 0.12) !important;
+            color: #28a745 !important;
             font-weight: 500;
         }
 
-        ::placeholder {
-            color: rgba(209, 209, 209, 0.15) !important;
+        .badge-inactive {
+            background-color: rgba(220, 53, 69, 0.12) !important;
+            color: #ff5c75 !important;
+            font-weight: 500;
+        }
+
+        /* Action Buttons Hover Transitions */
+        .action-btn-view:hover {
+            background-color: #17a2b8 !important;
+            transform: translateY(-1px);
+        }
+
+        .action-btn-edit:hover {
+            background-color: #6c5dd3 !important;
+            transform: translateY(-1px);
+        }
+
+        .action-btn-delete:hover {
+            background-color: #dc3545 !important;
+            transform: translateY(-1px);
+        }
+
+        /* Responsive UI viewports breakpoints */
+        @media(max-width: 992px) {
+            .main-content-wrapper {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .table-responsive {
+                border-radius: 8px;
+            }
         }
     </style>

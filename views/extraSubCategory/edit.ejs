@@ -51,16 +51,19 @@
                                         <label class="font-weight-500 text-secondary small">
                                             Sub Category
                                         </label>
-                                        <select name="subCategory" class="form-control custom-input" required>
-                                            <option value="">Select Sub Category</option>
+                                        <select name="subCategory" class="form-control" required>
+                                        
                                             <% subCategories.forEach(sub=> { %>
-                                                <option value="<%= sub._id %>" <%=typeof extrasubcategory !=='undefined'
-                                                    && extrasubcategory.subcategory &&
-                                                    extrasubcategory.subcategory.toString()===sub._id.toString()
-                                                    ? 'selected' : '' %>>
-                                                    <%= sub.name %>
+                                        
+                                                <option value="<%= sub._id %>" <%=extraSubCategory.subCategory._id.toString()===sub._id.toString() ? "selected"
+                                                    : "" %>>
+                                        
+                                                    <%= sub.category.name %> → <%= sub.name %>
+                                        
                                                 </option>
+                                        
                                                 <% }) %>
+                                        
                                         </select>
                                     </div>
 

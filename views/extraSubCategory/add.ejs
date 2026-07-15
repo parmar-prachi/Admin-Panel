@@ -35,52 +35,51 @@
                                             Parent Category
                                         </label>
 
-                                        <select name="category" class="form-control custom-input" required>
-
-                                            <option value="">
-                                                Select Category
+                                    <select name="category" class="form-control">
+                                    
+                                        <option value="">
+                                            Select Category
+                                        </option>
+                                    
+                                    
+                                        <% categories.forEach(cat=>{
+                                            %>
+                                    
+                                            <option value="<%= cat._id %>">
+                                    
+                                                <%= cat.name %>
+                                    
                                             </option>
-
-                                            <% categories.forEach(cat=> { %>
-
-                                                <option value="<%= cat._id %>">
-
-                                                    <%= cat.name %>
-
-                                                </option>
-
-                                                <% }) %>
-
-                                        </select>
-
+                                    
+                                    
+                                            <% }) %>
+                                    
+                                    
+                                    </select>
                                     </div>
 
                                     <!-- Sub Category -->
 
                                     <div class="mb-3">
-
-                                        <label class="font-weight-500 text-secondary small">
-                                            Sub Category
-                                        </label>
-
-                                        <select name="subCategory" class="form-control custom-input" required>
-
-                                            <option value="">
-                                                Select Sub Category
-                                            </option>
-
+                                    
+                                        <label class="form-label">Sub Category</label>
+                                    
+                                        <select name="subCategory" class="form-control" required>
+                                    
+                                            <option value="">Select Sub Category</option>
+                                    
                                             <% subCategories.forEach(sub=> { %>
-
+                                    
                                                 <option value="<%= sub._id %>">
-
-                                                    <%= sub.name %>
-
+                                    
+                                                    <%= sub.category.name %> → <%= sub.name %>
+                                    
                                                 </option>
-
+                                    
                                                 <% }) %>
-
+                                    
                                         </select>
-
+                                    
                                     </div>
 
                                     <!-- Extra Sub Category Name -->

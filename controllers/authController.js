@@ -6,7 +6,64 @@ const User = require("../models/User");
 exports.registerPage = (req, res) => {
     res.render("signup");
 };
+// Register
+exports.register = async (req, res) => {
 
+    try {
+
+        const email = req.body.email.trim().toLowerCase();
+        const username = req.body.username.trim();
+
+        // Check Email
+        const existingEmail = await User.findOne({ email });
+
+        if (existingEmail) {
+            req.flash("error", "Email already exists.");
+            return res.redirect("/signup");
+        }
+
+        // Check Username
+        const existingUsername = await User.findOne({ username });
+
+        if (existingUsername) {
+            req.flash("error", "Username already exists.");
+            return res.redirect("/signup");
+        }
+
+        // Hash Password
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+        await User.create({
+
+            firstName: req.body.firstName,
+
+            lastName: req.body.lastName,
+
+            username,
+
+            email,
+
+            password: hashedPassword,
+
+            role
+
+        });
+
+        req.flash("success", "Registration successful. Please login.");
+
+        return res.redirect("/login");
+
+    } catch (err) {
+
+        console.log(err);
+
+        req.flash("error", "Something went wrong.");
+
+        return res.redirect("/signup");
+
+    }
+
+};
 // Login Page
 exports.loginPage = (req, res) => {
     res.render("login");

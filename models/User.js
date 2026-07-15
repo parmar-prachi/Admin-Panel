@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema({
     pincode: { type: String },
     education: { type: String },
     occupation: { type: String },
-    hobbies: { type: [String] }, 
+    hobbies: { type: [String] },
 
     joiningDate: {
         type: Date,
@@ -61,9 +61,14 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ["Super Admin", "Manager", "Employee"],
+        enum: [
+            "Super Admin",
+            "Admin",
+            "Manager",
+            "Employee"
+        ],
         default: "Employee"
-    },
+    }
 }, {
     timestamps: true
 });

@@ -7,7 +7,9 @@ const upload = require("../config/extraSubCategoryMulter");
 const sessionAuth = require("../middleware/sessionAuth");
 const roleAuth = require("../middleware/roleAuth");
 
+
 // View
+
 router.get(
     "/",
     sessionAuth,
@@ -15,15 +17,19 @@ router.get(
     extraSubCategoryController.viewPage
 );
 
+
 // Add Page
+
 router.get(
     "/add",
     sessionAuth,
     roleAuth("Super Admin", "Admin"),
-    extraSubCategoryController.addPage
+    extraSubCategoryController.addExtraSubCategoryPage
 );
 
+
 // Insert
+
 router.post(
     "/add",
     sessionAuth,
@@ -32,15 +38,19 @@ router.post(
     extraSubCategoryController.insertExtraSubCategory
 );
 
+
 // Edit Page
+
 router.get(
     "/edit/:id",
     sessionAuth,
     roleAuth("Super Admin", "Admin"),
-    extraSubCategoryController.editPage
+    extraSubCategoryController.editExtraSubCategoryPage
 );
 
+
 // Update
+
 router.post(
     "/update/:id",
     sessionAuth,
@@ -49,7 +59,9 @@ router.post(
     extraSubCategoryController.updateExtraSubCategory
 );
 
+
 // Delete
+
 router.get(
     "/delete/:id",
     sessionAuth,
@@ -57,12 +69,15 @@ router.get(
     extraSubCategoryController.deleteExtraSubCategory
 );
 
+
 // Status
+
 router.get(
     "/status/:id",
     sessionAuth,
     roleAuth("Super Admin", "Admin"),
     extraSubCategoryController.toggleStatus
 );
+
 
 module.exports = router;
